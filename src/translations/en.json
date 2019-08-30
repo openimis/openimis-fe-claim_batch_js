@@ -1,0 +1,23 @@
+{
+    "claim_batch.menu.claim_batch": "Batch Run",
+    "claim_batch.BatchRun": "Batch Run",
+    "claim_batch.BatchRunLauncher.title": "Launch Batch Run",
+    "claim_batch.BatchRunSearcher.title": "Batch Runs ({totalCount})",
+    "claim_batch.AccountPreviewer.title": "Accounts",
+    "claim_batch.batchRunSummaries.year": "Year",
+    "claim_batch.batchRunSummaries.month": "Month",
+    "claim_batch.batchRunSummaries.product": "Product",
+    "claim_batch.batchRunSummaries.careType": "Care Type",
+    "claim_batch.batchRunSummaries.calculatedDate": "Calculated Date",
+    "claim_batch.batchRunSummaries.index": "Index",
+    "claim_batch.accountType": "Type",
+    "claim_batch.accountType.null": "Any",
+    "claim_batch.accountType.1": "Yearly",
+    "claim_batch.accountType.4": "Quarterly",
+    "claim_batch.accountType.12": "Monthly",
+    "claim_batch.groupBy": "Group By",
+    "claim_batch.groupBy.HF": "Health Facility",
+    "claim_batch.groupBy.P": "Product",
+    "claim_batch.previewer.dateFrom": "Date From",
+    "claim_batch.previewer.dateTo": "Date To"
+}
