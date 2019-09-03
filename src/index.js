@@ -26,7 +26,7 @@ const DEFAULT_CONFIG = {
     {
       text: <FormattedMessage module="claim_batch" id="menu.claim_batch"/>,
       icon: <Subscriptions />,
-      route: ROUTE_CLAIM_BATCH
+      route:  `/${ROUTE_CLAIM_BATCH}`
     },
   ]
 }
