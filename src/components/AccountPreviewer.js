@@ -72,7 +72,7 @@ class AccountPreviewer extends Component {
                         />
                     </Grid>
                     <Grid item xs={2} className={classes.item}>
-                        <DatePicker
+                        <PublishedComponent id="core.DatePicker"
                             module="claim_batch"
                             label="previewer.dateFrom"
                             value={this.state.dateFrom}
@@ -80,7 +80,7 @@ class AccountPreviewer extends Component {
                         />
                     </Grid>
                     <Grid item xs={2} className={classes.item}>
-                        <DatePicker
+                        <PublishedComponent id="core.DatePicker"
                             module="claim_batch"
                             label="previewer.dateTo"
                             value={this.state.dateTo}
