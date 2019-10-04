@@ -1,4 +1,7 @@
-import { parseData, formatServerError, formatGraphQLError } from '@openimis/fe-core';
+import {
+    parseData, pageInfo, formatServerError, formatGraphQLError,
+    dispatchMutationReq, dispatchMutationResp, dispatchMutationErr
+} from '@openimis/fe-core';
 
 function reducer(
     state = {
@@ -12,6 +15,8 @@ function reducer(
         batchRunSearcherPageInfo: { totalCount: 0 },
         errorBatchRunSearcher: null,
         submittingMutation: false,
+        mutation: {},
+        generatingReport: false,
     },
     action,
 ) {
@@ -52,7 +57,8 @@ function reducer(
                 ...state,
                 fetchingBatchRunSearcher: false,
                 fetchedBatchRunSearcher: true,
-                batchRunSearcher: action.payload.data.batchRuns,
+                batchRunSearcher: parseData(action.payload.data.batchRunsSummaries),
+                batchRunSearcherPageInfo: pageInfo(action.payload.data.batchRunsSummaries),
                 errorBatchRunSearcher: formatGraphQLError(action.payload)
             };
         case 'CLAIM_BATCH_CLAIM_BATCH_SEARCHER_ERR':
@@ -61,6 +67,23 @@ function reducer(
                 fetchingBatchRunSearcher: false,
                 errorBatchRunSearcher: formatServerError(action.payload)
             };
+        case 'CLAIM_BATCH_MUTATION_REQ':
+            return dispatchMutationReq(state, action)
+        case 'CLAIM_BATCH_MUTATION_ERR':
+            return dispatchMutationErr(state, action);
+        case 'CLAIM_BATCH_PROCESS_RESP':
+            return dispatchMutationResp(state, "processBatch", action)
+        case 'CLAIM_BATCH_PREVIEW':
+            return {
+                ...state,
+                generatingReport: true,
+                reportParameters: action.payload
+            };
+        case 'CLAIM_BATCH_PREVIEW_DONE':
+            return {
+                ...state,
+                generatingReport: false
+            };            
         default:
             return state;
     }
