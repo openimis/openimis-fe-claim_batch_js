@@ -29,6 +29,11 @@ function reducer(
                 batchRunPicker: [],
                 errorBatchRunPicker: null,
             };
+        case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_CLEAR':
+            return {
+                ...state,
+                batchRunPicker: []
+            }
         case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_RESP':
             return {
                 ...state,

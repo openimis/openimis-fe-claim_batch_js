@@ -199,6 +199,7 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="claim_batch.BatchRunPicker"
+                            scope={this.state.district}
                             onChange={this._onChange}
                             value={this.state.batchRun}
                             onChange={(v, s) => this._onChange('batchRun', v)}

@@ -5,9 +5,14 @@ import {
 import _ from "lodash-uuid";
 
 export function fetchBatchRunPicker(mm, scope) {
+  if (!scope) {
+    return dispatch => {
+      dispatch({ type: 'CLAIM_BATCH_CLAIM_BATCH_PICKER_CLEAR' })
+    }
+  }
   const payload = formatPageQuery("batchRuns",
-    [`location_Id: "${scope.id}"`],
-    mm.getRef("claim_batch.AccountPicker.projection")
+    [`location_Uuid: "${scope.uuid}"`],
+    mm.getRef("claim_batch.BatchRunPicker.projection")
   );
   return graphql(payload, 'CLAIM_BATCH_CLAIM_BATCH_PICKER');
 }
@@ -26,7 +31,6 @@ export function processBatch(location, year, month, clientMutationLabel) {
     locationId: ${decodeId(location.id)}
     month: ${month}
     year: ${year}
-
   `
   let mutation = formatMutation("processBatch", input, clientMutationLabel);
   var requestedDateTime = new Date();
@@ -44,7 +48,7 @@ export function processBatch(location, year, month, clientMutationLabel) {
 export function preview(prms) {
   return dispatch => {
     dispatch({ type: 'CLAIM_BATCH_PREVIEW', payload: prms })
-  }  
+  }
 }
 
 export function generateReport(prms) {
