@@ -6,6 +6,7 @@ import reducer from "./reducer";
 import ClaimBatchPage from "./pages/ClaimBatchPage";
 import BatchRunPicker from "./pickers/BatchRunPicker";
 import AccountTypePicker from "./pickers/AccountTypePicker";
+import { RIGHT_PROCESS, RIGHT_PREVIEW } from "./constants";
 
 const ROUTE_CLAIM_BATCH = "claim_batch";
 
@@ -21,12 +22,13 @@ const DEFAULT_CONFIG = {
   ],
   "core.Router": [
     { path: ROUTE_CLAIM_BATCH, component: ClaimBatchPage }
-  ],  
+  ],
   "claim.MainMenu": [
     {
-      text: <FormattedMessage module="claim_batch" id="menu.claim_batch"/>,
+      text: <FormattedMessage module="claim_batch" id="menu.claim_batch" />,
       icon: <Subscriptions />,
-      route:  `/${ROUTE_CLAIM_BATCH}`
+      route: `/${ROUTE_CLAIM_BATCH}`,
+      filter: rights => !!rights.filter(r => r >= RIGHT_PROCESS && r <= RIGHT_PREVIEW).length
     },
   ]
 }

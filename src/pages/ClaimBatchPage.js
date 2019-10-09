@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from "react";
+import { connect } from "react-redux";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import BatchRunLauncher from "../components/BatchRunLauncher";
 import BatchRunSearcher from "../components/BatchRunSearcher";
 import AccountPreviewer from "../components/AccountPreviewer";
+import { RIGHT_PROCESS, RIGHT_FILTER, RIGHT_PREVIEW } from "../constants";
 
 const styles = theme => ({
     section: {
@@ -12,15 +14,26 @@ const styles = theme => ({
 
 class ClaimBatchPage extends Component {
     render() {
-        const { classes } = this.props;
+        const { rights, classes } = this.props;
+        if (!rights.filter(r => r >= RIGHT_PROCESS && r <= RIGHT_PREVIEW).length) return null;
         return (
             <Fragment>
-                <BatchRunLauncher className={classes.section}/>
-                <BatchRunSearcher className={classes.section}/>
-                <AccountPreviewer className={classes.section}/>
+                {rights.includes(RIGHT_PROCESS) &&
+                    <BatchRunLauncher className={classes.section} />
+                }
+                {rights.includes(RIGHT_FILTER) &&
+                    <BatchRunSearcher className={classes.section} />
+                }
+                {rights.includes(RIGHT_PREVIEW) &&
+                    <AccountPreviewer className={classes.section} />
+                }
             </Fragment>
         )
     }
 }
 
-export default withTheme(withStyles(styles)(ClaimBatchPage));
+const mapStateToProps = state => ({
+    rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
+});
+
+export default withTheme(withStyles(styles)(connect(mapStateToProps)(ClaimBatchPage)));
