@@ -81,13 +81,12 @@ function reducer(
         case 'CLAIM_BATCH_PREVIEW':
             return {
                 ...state,
-                generatingReport: true,
-                reportParameters: action.payload
+                generating: true,
             };
         case 'CLAIM_BATCH_PREVIEW_DONE':
             return {
                 ...state,
-                generatingReport: false
+                generating: false
             };            
         default:
             return state;

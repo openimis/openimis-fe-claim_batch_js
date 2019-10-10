@@ -46,11 +46,12 @@ class AccountPreviewer extends Component {
     state = {
         group: ACCOUNT_GROUP_BY[0],
         showClaims: false,
+        reportParameters: [],
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!prevProps.generatingReport && !!this.props.generatingReport) {
-            this.props.generateReport(this.props.reportParameters)
+        if (!prevProps.generating && !!this.props.generating) {
+            this.props.generateReport(this.state.reportParameters)
         }
     }
 
@@ -96,7 +97,7 @@ class AccountPreviewer extends Component {
     }
 
     render() {
-        const { intl, classes, generatingReport } = this.props;
+        const { intl, classes, generating } = this.props;
         return (
             <Paper className={classes.paper}>
                 <Grid container className={classes.paperHeader}>
@@ -106,12 +107,12 @@ class AccountPreviewer extends Component {
                     <Grid item xs={1}>
                         <Grid container justify="flex-end">
                             <Grid item className={classes.paperHeaderAction}>
-                                {!generatingReport &&
-                                    <IconButton onClick={e => this.props.preview(this.state)}>
+                                {!generating &&
+                                    <IconButton onClick={e => this.props.preview()}>
                                         <PreviewIcon />
                                     </IconButton>
                                 }
-                                {!!generatingReport && <CircularProgress className={classes.generating} size={24} />}
+                                {!!generating && <CircularProgress className={classes.generating} size={24} />}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -212,8 +213,7 @@ class AccountPreviewer extends Component {
 }
 
 const mapStateToProps = state => ({
-    generatingReport: state.claim_batch.generatingReport,
-    reportParameters: state.claim_batch.reportParameters
+    generating: state.claim_batch.generating,
 });
 
 const mapDispatchToProps = dispatch => {

@@ -45,9 +45,9 @@ export function processBatch(location, year, month, clientMutationLabel) {
   )
 }
 
-export function preview(prms) {
+export function preview() {
   return dispatch => {
-    dispatch({ type: 'CLAIM_BATCH_PREVIEW', payload: prms })
+    dispatch({ type: 'CLAIM_BATCH_PREVIEW' })
   }
 }
 
