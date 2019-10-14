@@ -73,6 +73,19 @@ class BatchRunLauncher extends Component {
         !!this.state.year &&
         !!this.state.month
 
+    onChangeDistrict = (v, s) => {
+        this.setState({
+            region: {
+                id: v.regionId,
+                uuid: v.regionUuid,
+                code: v.regionCode,
+                name: v.regionName
+            },
+            district: v,
+            districtStr: s
+        });
+    }
+
     render() {
         const { classes } = this.props;
         const min = new Date().getFullYear() - 7;
@@ -112,7 +125,7 @@ class BatchRunLauncher extends Component {
                                 id="location.DistrictPicker"
                                 region={this.state.region}
                                 value={this.state.district}
-                                onChange={(v, s) => this.setState({ district: v, districtStr: s })}
+                                onChange={this.onChangeDistrict}
                             />
                         }
                     </Grid>
