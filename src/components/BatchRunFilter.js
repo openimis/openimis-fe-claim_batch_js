@@ -4,7 +4,8 @@ import { injectIntl } from 'react-intl';
 import _debounce from "lodash/debounce";
 
 import { Grid } from "@material-ui/core";
-import { withModulesManager, PublishedComponent, YearPicker, MonthPicker } from "@openimis/fe-core";
+import { withModulesManager, PublishedComponent, decodeId } from "@openimis/fe-core";
+import { NATIONAL_ID } from "../constants";
 
 const styles = theme => ({
     dialogTitle: theme.dialog.title,
@@ -19,13 +20,56 @@ const styles = theme => ({
 });
 
 class BatchRunFilter extends Component {
-    debouncedOnChangeFilter = _debounce(
-        this.props.onChangeFilter,
-        this.props.modulesManager.getConf("fe-claim_batch", "debounceTime", 800)
-    )
+
+    state = {
+        reset: 0
+    }
+
+    _regionFilter = v => {
+        return {
+            id: 'accountRegion',
+            value: v,
+            filter: !!v ? `accountRegion: ${decodeId(v.id)}` : null
+        }
+    }
+
+    _onChangeRegion = (v, s) => {
+        this.props.onChangeFilters([
+            this._regionFilter(v),
+            {
+                id: 'accountDistrict',
+                value: null
+            }
+        ]);
+        this.setState({
+            reset: this.state.reset + 1,
+        });
+    }
+
+    _onChangeDistrict = (v, s) => {
+        var filters = []
+        if (!!v) {
+            filters.push(this._regionFilter({
+                id: v.regionId,
+                code: v.regionCode,
+                name: v.regionName
+            }));
+        }
+        filters.push(
+            {
+                id: 'accountDistrict',
+                value: v,
+                filter: !!v ? `accountDistrict: ${decodeId(v.id)}` : null
+            }
+        );
+        this.props.onChangeFilters(filters);
+        this.setState({
+            reset: this.state.reset + 1,
+        });
+    }
 
     render() {
-        const { intl, classes, filters, onChangeFilter, fixFilter } = this.props;
+        const { classes, filters, onChangeFilters } = this.props;
         const min = new Date().getFullYear() - 7;
         const max = min + 9;
         return (
@@ -35,79 +79,84 @@ class BatchRunFilter extends Component {
                         id="claim_batch.AccountTypePicker"
                         name="accountType"
                         value={(filters['accountType'] && filters['accountType']['value'])}
-                        onChange={(v, s) => onChangeFilter(
-                            'accountType', v,
-                            `accountType: ${v}`
-                        )}
+                        onChange={(v, s) => onChangeFilters([{
+                            id: 'accountType',
+                            value: v,
+                            filter: `accountType: ${v}`
+                        }])}
                     />
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
-                    <YearPicker
+                    <PublishedComponent
+                        id="core.YearPicker"
                         module="claim_batch"
                         label="year"
-                        nullLabel="year.select"
+                        nullLabel="year.null"
                         min={min}
                         max={max}
                         value={(filters['accountYear'] && filters['accountYear']['value'])}
-                        onChange={v => onChangeFilter(
-                            'accountYear', v,
-                            `accountYear: ${v}`
-                        )}
+                        onChange={v => onChangeFilters([{
+                            id: 'accountYear',
+                            value: v,
+                            filter: `accountYear: ${v}`
+                        }])}
                     />
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
-                    <MonthPicker
+                    <PublishedComponent
+                        id="core.MonthPicker"
                         module="claim_batch"
                         label="month"
-                        nullLabel="month.select"
+                        nullLabel="month.null"
                         value={(filters['accountMonth'] && filters['accountMonth']['value'])}
-                        onChange={v => onChangeFilter(
-                            'accountMonth', v,
-                            `accountMonth: ${v}`
-                        )}
+                        onChange={v => onChangeFilters([{
+                            id: 'accountMonth',
+                            value: v,
+                            filter: `accountMonth: ${v}`
+                        }])}
                     />
                 </Grid>
                 <Grid item xs={3} />
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
                         id="location.RegionPicker"
-                        value={(filters['accountRegion'] && filters['accountRegion']['value'])}
-                        onChange={(v, s) => onChangeFilter(
-                            'accountRegion', v,
-                            `accountRegion: ${v}`
-                        )}
+                        preValues={[{ id: NATIONAL_ID, code: '', name: 'National' }]} //Oi0x = :-1, base64 encoded
+                        value={(!!filters['accountRegion'] ? filters['accountRegion']['value'] : null)}
+                        onChange={this._onChangeRegion}
                     />
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                        id="location.DistrictPicker"
-                        value={(filters['accountDistrict'] && filters['accountDistrict']['value'])}
-                        onChange={(v, s) => onChangeFilter(
-                            'accountDistrict', v,
-                            `accountDistrict: ${v}`
-                        )}
-                    />
+                    {(!filters['accountRegion'] || filters['accountRegion']['value']['id'] !== NATIONAL_ID) &&
+                        <PublishedComponent
+                            id="location.DistrictPicker"
+                            value={(filters['accountDistrict'] && filters['accountDistrict']['value'])}
+                            region={filters['accountRegion'] && filters['accountRegion']['value']}
+                            onChange={this._onChangeDistrict}
+                        />
+                    }
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
                         id="product.ProductPicker"
                         value={(filters['accountProduct'] && filters['accountProduct']['value'])}
-                        onChange={(v, s) => onChangeFilter(
-                            'accountProduct', v,
-                            `accountProduct: ${v}`
-                        )}
+                        onChange={(v, s) => onChangeFilters([{
+                            id: 'accountProduct',
+                            value: v,
+                            filter: !!v ? `accountProduct: ${decodeId(v.id)}` : null
+                        }])}
                     />
-                </Grid>    
+                </Grid>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
-                        id="location.HealthFacilityLevelPicker"
-                        value={(filters['accountHealthFacilityLevel'] && filters['accountHealthFacilityLevel']['value'])}
-                        onChange={(v, s) => onChangeFilter(
-                            'accountHealthFacility', v,
-                            `accountHealthFacility: ${v}`
-                        )}
+                        id="medical.CareTypePicker"
+                        value={(filters['accountCareType'] && filters['accountCareType']['value'])}
+                        onChange={(v, s) => onChangeFilters([{
+                            id: 'accountCareType',
+                            value: v,
+                            filter: !!v ? `accountCareType: "${v}"` : null
+                        }])}
                     />
-                </Grid>                              
+                </Grid>
             </Grid>
         )
     }

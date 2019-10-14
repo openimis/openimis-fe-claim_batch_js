@@ -1,9 +1,12 @@
 import React, { Component } from "react";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
-import { Paper, Grid, IconButton, Divider } from "@material-ui/core";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Paper, Grid, IconButton, Divider, FormControlLabel, Checkbox, CircularProgress } from "@material-ui/core";
 import PreviewIcon from "@material-ui/icons/ListAlt";
-import { FormattedMessage, PublishedComponent, DatePicker, ConstantBasedPicker } from "@openimis/fe-core";
+import { FormattedMessage, PublishedComponent, ConstantBasedPicker, formatMessage } from "@openimis/fe-core";
+import { preview, generateReport } from "../actions"
 
 import { ACCOUNT_GROUP_BY } from "../constants";
 
@@ -21,6 +24,9 @@ const styles = theme => ({
         padding: theme.spacing(1)
     },
     paperDivider: theme.paper.divider,
+    generating: {
+        margin: theme.spacing(1)
+    }
 });
 
 class AccountGroupBySelect extends Component {
@@ -38,15 +44,60 @@ class AccountGroupBySelect extends Component {
 class AccountPreviewer extends Component {
 
     state = {
-        accountGroupBy: "HF"
+        group: ACCOUNT_GROUP_BY[0],
+        showClaims: false,
+        reportParameters: [],
     }
 
-    _preview = () => console.log("PREVIEW "+ JSON.stringify(this.state));
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!prevProps.generating && !!this.props.generating) {
+            this.props.generateReport(this.state.reportParameters)
+        }
+    }
 
     _onChange = (key, v) => this.setState({ [key]: v })
 
+    _onChangeRegion = (v, s) => {
+        this.setState({
+            region: v,
+            district: null,
+            healthFacility: null
+        });
+    }
+
+    _onChangeDistrict = (v, s) => {
+        var region = v == null ? null : {
+            id: v.regionId,
+            code: v.regionCode,
+            name: v.regionName
+        }
+        this.setState({
+            region,
+            district: v,
+            healthFacility: null
+        });
+    }
+
+    _onChangeHealthFacility = (v, s) => {
+        var region = v == null ? null : {
+            id: v.location.parent.id,
+            code: v.location.parent.code,
+            name: v.location.parent.name
+        }
+        var district = v == null ? null : {
+            id: v.location.id,
+            code: v.location.code,
+            name: v.location.name
+        }
+        this.setState({
+            region,
+            district,
+            healthFacility: v
+        });
+    }
+
     render() {
-        const { classes } = this.props;
+        const { intl, classes, generating } = this.props;
         return (
             <Paper className={classes.paper}>
                 <Grid container className={classes.paperHeader}>
@@ -56,9 +107,12 @@ class AccountPreviewer extends Component {
                     <Grid item xs={1}>
                         <Grid container justify="flex-end">
                             <Grid item className={classes.paperHeaderAction}>
-                                <IconButton onClick={this._preview}>
-                                    <PreviewIcon />
-                                </IconButton>
+                                {!generating &&
+                                    <IconButton onClick={e => this.props.preview()}>
+                                        <PreviewIcon />
+                                    </IconButton>
+                                }
+                                {!!generating && <CircularProgress className={classes.generating} size={24} />}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -67,12 +121,12 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <AccountGroupBySelect
-                            value={this.state.accountGroupBy}
-                            onChange={(v,s) => this._onChange('accountGroupBy', v)}
+                            value={this.state.group}
+                            onChange={(v, s) => this._onChange('group', v)}
                         />
                     </Grid>
                     <Grid item xs={2} className={classes.item}>
-                        <DatePicker
+                        <PublishedComponent id="core.DatePicker"
                             module="claim_batch"
                             label="previewer.dateFrom"
                             value={this.state.dateFrom}
@@ -80,11 +134,23 @@ class AccountPreviewer extends Component {
                         />
                     </Grid>
                     <Grid item xs={2} className={classes.item}>
-                        <DatePicker
+                        <PublishedComponent id="core.DatePicker"
                             module="claim_batch"
                             label="previewer.dateTo"
                             value={this.state.dateTo}
                             onChange={(v, s) => this._onChange('dateTo', v)}
+                        />
+                    </Grid>
+                    <Grid item xs={2} className={classes.item}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    color="primary"
+                                    checked={this.state.showClaims}
+                                    onChange={e => this._onChange('showClaims', !this.state.showClaims)}
+                                />
+                            }
+                            label={formatMessage(intl, "claim_batch", "previewer.showClaims")}
                         />
                     </Grid>
                     <Grid item xs={6} className={classes.item}></Grid>
@@ -95,32 +161,32 @@ class AccountPreviewer extends Component {
                         <PublishedComponent
                             id="location.RegionPicker"
                             onChange={this._onChange}
-                            value={this.state.accountRegion}
-                            onChange={(v, s) => this._onChange('accountRegion', v)}
+                            value={this.state.region}
+                            onChange={this._onChangeRegion}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.DistrictPicker"
                             onChange={this._onChange}
-                            value={this.state.accountDistrict}
-                            onChange={(v, s) => this._onChange('accountDistrict', v)}
+                            value={this.state.district}
+                            onChange={this._onChangeDistrict}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.HealthFacilityPicker"
                             onChange={this._onChange}
-                            value={this.state.accountHealthFacility}
-                            onChange={(v, s) => this._onChange('accountHealthFacility', v)}                            
+                            value={this.state.healthFacility}
+                            onChange={this._onChangeHealthFacility}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.HealthFacilityLevelPicker"
                             onChange={this._onChange}
-                            value={this.state.accountHealthFacilityLevel}
-                            onChange={(v, s) => this._onChange('accountHealthFacilityLevel', v)}                            
+                            value={this.state.healthFacilityLevel}
+                            onChange={(v, s) => this._onChange('healthFacilityLevel', v)}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
@@ -128,15 +194,16 @@ class AccountPreviewer extends Component {
                             id="product.ProductPicker"
                             onChange={this._onChange}
                             value={this.state.accountProduct}
-                            onChange={(v, s) => this._onChange('accountProduct', v)}   
+                            onChange={(v, s) => this._onChange('product', v)}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="claim_batch.BatchRunPicker"
+                            scope={this.state.district}
                             onChange={this._onChange}
                             value={this.state.batchRun}
-                            onChange={(v, s) => this._onChange('batchRun', v)}   
+                            onChange={(v, s) => this._onChange('batchRun', v)}
                         />
                     </Grid>
                 </Grid>
@@ -145,4 +212,14 @@ class AccountPreviewer extends Component {
     }
 }
 
-export default injectIntl(withTheme(withStyles(styles)(AccountPreviewer)));
+const mapStateToProps = state => ({
+    generating: state.claim_batch.generating,
+});
+
+const mapDispatchToProps = dispatch => {
+    return bindActionCreators(
+        { preview, generateReport },
+        dispatch);
+};
+
+export default injectIntl(withTheme(withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(AccountPreviewer))));

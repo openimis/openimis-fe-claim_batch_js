@@ -3,12 +3,13 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { FormattedMessage, withModulesManager, Table } from "@openimis/fe-core";
+import { FormattedMessage, withModulesManager, Table, PublishedComponent } from "@openimis/fe-core";
 import BatchRunFilter from "./BatchRunFilter";
-import { Grid, Paper } from "@material-ui/core";
+import { Grid, Paper, IconButton } from "@material-ui/core";
 import { fetchBatchRunSummaries } from "../actions";
 import _ from "lodash";
 import _debounce from "lodash/debounce";
+import SearchIcon from "@material-ui/icons/Search";
 
 const styles = theme => ({
     paper: {
@@ -43,7 +44,6 @@ class BatchRunSearcher extends Component {
 
     componentDidMount() {
         this.setState({
-            // filters: this.props.defaultFilters,
             pageSize: this.defaultPageSize,
         },
             e => this.props.fetchBatchRunSummaries(
@@ -74,23 +74,23 @@ class BatchRunSearcher extends Component {
         return prms;
     }
 
-    onChangeFilter = (id, value, filter) => {
-        let fltrs = this.state.filters;
-        if (value === null) {
-            delete (fltrs[id]);
-        } else {
-            fltrs[id] = { value, filter };
-        }
-        this.setState({
-            filters: fltrs
-        },
+    onChangeFilters = fltrs => {
+        let filters = { ...this.state.filters };
+        fltrs.forEach(filter => {
+            if (filter.value === null) {
+                delete (filters[filter.id]);
+            } else {
+                filters[filter.id] = { value: filter.value, filter: filter.filter };
+            }
+        });
+        this.setState(
+            { filters },
             e => this.applyFilters()
         )
     }
 
     applyFilters = () => {
         this.setState({
-            open: false,
             page: 0,
             afterCursor: null,
             beforeCursor: null,
@@ -125,7 +125,7 @@ class BatchRunSearcher extends Component {
                 {
                     page: this.state.page + 1,
                     beforeCursor: null,
-                    afterCursor: this.props.claim_batchSearcherPageInfo.endCursor,
+                    afterCursor: this.props.batchRunSearcherPageInfo.endCursor,
                 },
                 e => this.props.fetchBatchRunSummaries(
                     this.props.modulesManager,
@@ -136,7 +136,7 @@ class BatchRunSearcher extends Component {
             this.setState(
                 {
                     page: this.state.page - 1,
-                    beforeCursor: this.props.claim_batchSearcherPageInfo.startCursor,
+                    beforeCursor: this.props.batchRunSearcherPageInfo.startCursor,
                     afterCursor: null,
                 },
                 e => this.props.fetchBatchRunSummaries(
@@ -151,17 +151,26 @@ class BatchRunSearcher extends Component {
         return (
             <Paper>
                 <Grid container className={classes.paperHeader}>
-                    <Grid item xs={12} className={classes.paperHeaderTitle}>
+                    <Grid item xs={8} className={classes.paperHeaderTitle}>
                         <FormattedMessage module="claim_batch"
                             id="BatchRunSearcher.title"
                             values={{ totalCount: batchRunSearcherPageInfo.totalCount }}
                         />
                     </Grid>
+                    <Grid item xs={4}>
+                        <Grid container justify="flex-end">
+                            <Grid item className={classes.paperHeaderAction}>
+                                <IconButton onClick={this.applyFilters}>
+                                    <SearchIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                     <Grid item xs={12}>
                         <BatchRunFilter
                             filters={this.state.filters}
                             apply={this.applyFilters}
-                            onChangeFilter={this.onChangeFilter}
+                            onChangeFilters={this.onChangeFilters}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -177,16 +186,26 @@ class BatchRunSearcher extends Component {
                             ]}
                             itemFormatters={[
                                 b => b.runYear,
-                                b => b.runMonth,                                
+                                b => <PublishedComponent
+                                    id="core.MonthPicker"
+                                    readOnly={true}
+                                    withLabel={false}
+                                    value={b.runMonth}
+                                />,
                                 b => b.productLabel,
                                 b => <PublishedComponent
-                                    readOnly={true}
                                     id="medical.CareTypePicker"
-                                    withLabel={false} 
+                                    readOnly={true}
+                                    withLabel={false}
                                     value={b.careType}
                                 />,
-                                b => "CALCULATED DATE",
-                                b => "INDEX"
+                                b => <PublishedComponent
+                                    id="core.DatePicker"
+                                    readOnly={true}
+                                    withLabel={false}
+                                    value={b.calcDate}
+                                />,
+                                b => b.index
                             ]}
                             items={batchRunSearcher}
                             withPagination={true}

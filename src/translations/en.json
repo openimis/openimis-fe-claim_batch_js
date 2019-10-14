@@ -1,5 +1,5 @@
 {
-    "claim_batch.menu.claim_batch": "Batch Run",
+    "claim_batch.menu.claim_batch": "Batch Runs",
     "claim_batch.BatchRun": "Batch Run",
     "claim_batch.BatchRunLauncher.title": "Launch Batch Run",
     "claim_batch.BatchRunSearcher.title": "Batch Runs ({totalCount})",
@@ -16,8 +16,13 @@
     "claim_batch.accountType.4": "Quarterly",
     "claim_batch.accountType.12": "Monthly",
     "claim_batch.groupBy": "Group By",
-    "claim_batch.groupBy.HF": "Health Facility",
+    "claim_batch.groupBy.H": "Health Facility",
     "claim_batch.groupBy.P": "Product",
     "claim_batch.previewer.dateFrom": "Date From",
-    "claim_batch.previewer.dateTo": "Date To"
+    "claim_batch.previewer.dateTo": "Date To",
+    "claim_batch.previewer.showClaims": "Show claims",
+    "claim_batch.processBatch.confirm.title": "Launch Batch Processing",
+    "claim_batch.processBatch.confirm.message": "Are you sure you want to process batches for {location}, {month} {year}?",
+    "claim_batch.processBatch.mutationLabel": "Batch Process - {location}, {month} {year}",
+    "claim_batch.regions.country":"National"
 }
