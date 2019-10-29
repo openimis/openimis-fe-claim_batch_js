@@ -3,7 +3,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { FormattedMessage, withModulesManager, Table, PublishedComponent } from "@openimis/fe-core";
+import { FormattedMessage, withModulesManager, Table, PublishedComponent, ProgressOrError } from "@openimis/fe-core";
 import BatchRunFilter from "./BatchRunFilter";
 import { Grid, Paper, IconButton } from "@material-ui/core";
 import { fetchBatchRunSummaries } from "../actions";
@@ -147,7 +147,9 @@ class BatchRunSearcher extends Component {
         }
     }
     render() {
-        const { classes, batchRunSearcher, batchRunSearcherPageInfo } = this.props;
+        const { classes, batchRunSearcher, batchRunSearcherPageInfo,
+            fetchingBatchRunSearcher, errorBatchRunSearcher, fetchedBatchRunSearcher
+        } = this.props;
         return (
             <Paper>
                 <Grid container className={classes.paperHeader}>
@@ -174,49 +176,52 @@ class BatchRunSearcher extends Component {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Table
-                            module="claim_batch"
-                            headers={[
-                                "batchRunSummaries.year",
-                                "batchRunSummaries.month",
-                                "batchRunSummaries.product",
-                                "batchRunSummaries.careType",
-                                "batchRunSummaries.calculatedDate",
-                                "batchRunSummaries.index",
-                            ]}
-                            itemFormatters={[
-                                b => b.runYear,
-                                b => <PublishedComponent
-                                    id="core.MonthPicker"
-                                    readOnly={true}
-                                    withLabel={false}
-                                    value={b.runMonth}
-                                />,
-                                b => b.productLabel,
-                                b => <PublishedComponent
-                                    id="medical.CareTypePicker"
-                                    readOnly={true}
-                                    withLabel={false}
-                                    value={b.careType}
-                                />,
-                                b => <PublishedComponent
-                                    id="core.DatePicker"
-                                    readOnly={true}
-                                    withLabel={false}
-                                    value={b.calcDate}
-                                />,
-                                b => b.index
-                            ]}
-                            items={batchRunSearcher}
-                            withPagination={true}
-                            itemIdentifier={this.rowIdentifier}
-                            page={this.state.page}
-                            pageSize={this.state.pageSize}
-                            count={batchRunSearcherPageInfo.totalCount}
-                            onChangePage={this.onChangePage}
-                            rowsPerPageOptions={this.rowsPerPageOptions}
-                            onChangeRowsPerPage={this.onChangeRowsPerPage}
-                        />
+                        <ProgressOrError progress={fetchingBatchRunSearcher} error={errorBatchRunSearcher} />
+                        {!!fetchedBatchRunSearcher && (
+                            <Table
+                                module="claim_batch"
+                                headers={[
+                                    "batchRunSummaries.year",
+                                    "batchRunSummaries.month",
+                                    "batchRunSummaries.product",
+                                    "batchRunSummaries.careType",
+                                    "batchRunSummaries.calculatedDate",
+                                    "batchRunSummaries.index",
+                                ]}
+                                itemFormatters={[
+                                    b => b.runYear,
+                                    b => <PublishedComponent
+                                        id="core.MonthPicker"
+                                        readOnly={true}
+                                        withLabel={false}
+                                        value={b.runMonth}
+                                    />,
+                                    b => b.productLabel,
+                                    b => <PublishedComponent
+                                        id="medical.CareTypePicker"
+                                        readOnly={true}
+                                        withLabel={false}
+                                        value={b.careType}
+                                    />,
+                                    b => <PublishedComponent
+                                        id="core.DatePicker"
+                                        readOnly={true}
+                                        withLabel={false}
+                                        value={b.calcDate}
+                                    />,
+                                    b => b.index
+                                ]}
+                                items={batchRunSearcher}
+                                withPagination={true}
+                                itemIdentifier={this.rowIdentifier}
+                                page={this.state.page}
+                                pageSize={this.state.pageSize}
+                                count={batchRunSearcherPageInfo.totalCount}
+                                onChangePage={this.onChangePage}
+                                rowsPerPageOptions={this.rowsPerPageOptions}
+                                onChangeRowsPerPage={this.onChangeRowsPerPage}
+                            />
+                        )}
                     </Grid>
                 </Grid>
             </Paper>
