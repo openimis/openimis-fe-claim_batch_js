@@ -46,12 +46,11 @@ class AccountPreviewer extends Component {
     state = {
         group: ACCOUNT_GROUP_BY[0],
         showClaims: false,
-        reportParameters: [],
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (!prevProps.generating && !!this.props.generating) {
-            this.props.generateReport(this.state.reportParameters)
+            this.props.generateReport({...this.state})
         }
     }
 
@@ -193,7 +192,7 @@ class AccountPreviewer extends Component {
                         <PublishedComponent
                             id="product.ProductPicker"
                             onChange={this._onChange}
-                            value={this.state.accountProduct}
+                            value={this.state.product}
                             onChange={(v, s) => this._onChange('product', v)}
                         />
                     </Grid>

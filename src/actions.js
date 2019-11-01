@@ -54,10 +54,17 @@ export function preview() {
 export function generateReport(prms) {
   var qParams = {
     locationId: !prms.region ? 0 : decodeId(prms.region.id),
+    regionCode: !prms.region ? '' : prms.region.code,
+    regionName: !prms.region ? '' : prms.region.name,
     prodId: !prms.product ? 0 : decodeId(prms.product.id),
+    productCode: !prms.product ? '' : prms.product.code,
+    productName: !prms.product ? '' : prms.product.name,
     runId: !prms.batchRun ? 0 : decodeId(prms.batchRun.id),
+    runDate: !prms.batchRun ? '' : toISODate(prms.batchRun.runDate),
     hfId: !prms.healthFacility ? 0 : decodeId(prms.healthFacility.id),
-    hfLevel: !prms.healthFacilityLevel ? '' : decodeId(prms.healthFacilityLevel),
+    hfCode: !prms.healthFacility ? '' : prms.healthFacility.code,
+    hfName: !prms.healthFacility ? '' : prms.healthFacility.name,
+    hfLevel: !prms.healthFacilityLevel ? '' : prms.healthFacilityLevel,
     dateFrom: !prms.dateFrom ? '' : toISODate(prms.dateFrom),
     dateTo: !prms.dateTo ? '' : toISODate(prms.dateTo),
     group: prms.group,
