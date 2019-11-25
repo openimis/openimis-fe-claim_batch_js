@@ -26,13 +26,13 @@ export function fetchBatchRunSummaries(mm, filters) {
   return graphql(payload, 'CLAIM_BATCH_CLAIM_BATCH_SEARCHER');
 }
 
-export function processBatch(location, year, month, clientMutationLabel) {
+export function processBatch(location, year, month, clientMutationLabel, clientMutationDetails = null) {
   let input = `
     locationId: ${decodeId(location.id)}
     month: ${month}
     year: ${year}
   `
-  let mutation = formatMutation("processBatch", input, clientMutationLabel);
+  let mutation = formatMutation("processBatch", input, clientMutationLabel, clientMutationDetails);
   var requestedDateTime = new Date();
   return graphql(
     mutation.payload,
@@ -40,7 +40,8 @@ export function processBatch(location, year, month, clientMutationLabel) {
     {
       clientMutationId: mutation.clientMutationId,
       clientMutationLabel,
-      requestedDateTime
+      clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
+    requestedDateTime
     }
   )
 }

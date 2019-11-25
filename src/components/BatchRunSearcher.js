@@ -8,7 +8,6 @@ import BatchRunFilter from "./BatchRunFilter";
 import { Grid, Paper, IconButton } from "@material-ui/core";
 import { fetchBatchRunSummaries } from "../actions";
 import _ from "lodash";
-import _debounce from "lodash/debounce";
 import SearchIcon from "@material-ui/icons/Search";
 
 const styles = theme => ({

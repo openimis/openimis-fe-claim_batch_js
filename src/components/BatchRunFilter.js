@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
-import _debounce from "lodash/debounce";
 
 import { Grid } from "@material-ui/core";
 import { withModulesManager, PublishedComponent, decodeId } from "@openimis/fe-core";
