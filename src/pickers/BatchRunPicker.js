@@ -4,7 +4,6 @@ import { bindActionCreators } from "redux";
 import { injectIntl } from 'react-intl';
 import { SelectInput, withModulesManager } from "@openimis/fe-core";
 import { fetchBatchRunPicker } from "../actions";
-import _debounce from "lodash/debounce";
 
 class BatchRunPicker extends Component {
 
@@ -14,7 +13,7 @@ class BatchRunPicker extends Component {
         }
     }
 
-    formatSuggestion = s => `${s.runDate}`;
+    formatSuggestion = s => `${!s ? this.props.noneLabel : s.runDate}`;
 
     _onChange = v => this.props.onChange(
         v,
@@ -22,16 +21,23 @@ class BatchRunPicker extends Component {
     )
 
     render() {
-        const { name, scope, batchRuns, value } = this.props;
+        const { name, scope, batchRuns, value, noneLabel = null } = this.props;
+        let options = [
+            ...batchRuns.map(v => ({
+                value: v,
+                label: this.formatSuggestion(v)
+            }))]
+        if (!!noneLabel) {
+            options.unshift({
+                value: null,
+                label: noneLabel
+            })
+        }
         return (
             <SelectInput
                 disabled={!scope}
                 module="claim_batch" label="BatchRun"
-                options={[
-                    ...batchRuns.map(v => ({
-                        value: v,
-                        label: this.formatSuggestion(v)
-                    }))]}
+                options={options}
                 name={name}
                 value={value}
                 onChange={this._onChange}
