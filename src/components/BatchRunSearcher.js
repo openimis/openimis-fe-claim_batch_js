@@ -52,12 +52,6 @@ class BatchRunSearcher extends Component {
         );
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!_.isEqual(prevProps.forcedFilters, this.props.forcedFilters)) {
-            this.applyFilters();
-        }
-    }
-
     filtersToQueryParams = () => {
         let prms = Object.keys(this.state.filters).map(f => this.state.filters[f]['filter']);
         prms = prms.concat(`first: ${this.state.pageSize}`);
@@ -66,9 +60,6 @@ class BatchRunSearcher extends Component {
         }
         if (!!this.state.beforeCursor) {
             prms.push(`before: "${this.state.beforeCursor}"`)
-        }
-        if (!!this.props.forcedFilters) {
-            prms.push(...this.props.forcedFilters);
         }
         return prms;
     }

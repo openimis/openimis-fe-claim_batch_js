@@ -159,7 +159,6 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.RegionPicker"
-                            onChange={this._onChange}
                             value={this.state.region}
                             onChange={this._onChangeRegion}
                         />
@@ -167,7 +166,6 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.DistrictPicker"
-                            onChange={this._onChange}
                             value={this.state.district}
                             onChange={this._onChangeDistrict}
                         />
@@ -175,7 +173,6 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.HealthFacilityPicker"
-                            onChange={this._onChange}
                             value={this.state.healthFacility}
                             onChange={this._onChangeHealthFacility}
                         />
@@ -183,7 +180,6 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.HealthFacilityLevelPicker"
-                            onChange={this._onChange}
                             value={this.state.healthFacilityLevel}
                             onChange={(v, s) => this._onChange('healthFacilityLevel', v)}
                         />
@@ -191,7 +187,6 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="product.ProductPicker"
-                            onChange={this._onChange}
                             value={this.state.product}
                             onChange={(v, s) => this._onChange('product', v)}
                         />
@@ -200,7 +195,6 @@ class AccountPreviewer extends Component {
                         <PublishedComponent
                             id="claim_batch.BatchRunPicker"
                             scope={this.state.district}
-                            onChange={this._onChange}
                             value={this.state.batchRun}
                             onChange={(v, s) => this._onChange('batchRun', v)}
                         />
