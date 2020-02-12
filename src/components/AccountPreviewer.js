@@ -60,38 +60,45 @@ class AccountPreviewer extends Component {
         this.setState({
             region: v,
             district: null,
-            healthFacility: null
+            healthFacility: null,
+            batchRun: null,
         });
     }
 
     _onChangeDistrict = (v, s) => {
         var region = v == null ? null : {
-            id: v.regionId,
-            code: v.regionCode,
-            name: v.regionName
+            id: v.parent.id,
+            uuid: v.parent.uuid,
+            code: v.parent.code,
+            name: v.parent.name
         }
         this.setState({
             region,
             district: v,
-            healthFacility: null
+            healthFacility: null,
+            batchRun: null,
         });
     }
 
     _onChangeHealthFacility = (v, s) => {
         var region = v == null ? null : {
             id: v.location.parent.id,
+            uuid: v.location.parent.uuid,
             code: v.location.parent.code,
-            name: v.location.parent.name
+            name: v.location.parent.name,
         }
         var district = v == null ? null : {
             id: v.location.id,
+            uuid: v.location.uuid,
             code: v.location.code,
-            name: v.location.name
+            name: v.location.name,
+            parent: v.location.parent,
         }
         this.setState({
             region,
             district,
-            healthFacility: v
+            healthFacility: v,
+            batchRun: null,
         });
     }
 
@@ -161,18 +168,23 @@ class AccountPreviewer extends Component {
                             id="location.RegionPicker"
                             value={this.state.region}
                             onChange={this._onChangeRegion}
+                            withNull={true}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.DistrictPicker"
+                            region={this.state.region}
                             value={this.state.district}
                             onChange={this._onChangeDistrict}
+                            withNull={true}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.HealthFacilityPicker"
+                            region={this.state.region}
+                            district={this.state.district}                            
                             value={this.state.healthFacility}
                             onChange={this._onChangeHealthFacility}
                         />
@@ -196,6 +208,7 @@ class AccountPreviewer extends Component {
                             id="claim_batch.BatchRunPicker"
                             scope={this.state.district}
                             value={this.state.batchRun}
+                            withNull={true}
                             onChange={(v, s) => this._onChange('batchRun', v)}
                         />
                     </Grid>

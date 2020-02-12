@@ -3,7 +3,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
 
 import { Grid } from "@material-ui/core";
-import { withModulesManager, PublishedComponent, decodeId } from "@openimis/fe-core";
+import { withModulesManager, PublishedComponent, decodeId, formatMessage } from "@openimis/fe-core";
 import { NATIONAL_ID } from "../constants";
 
 const styles = theme => ({
@@ -68,7 +68,7 @@ class BatchRunFilter extends Component {
     }
 
     render() {
-        const { classes, filters, onChangeFilters } = this.props;
+        const { intl, classes, filters, onChangeFilters } = this.props;
         const min = new Date().getFullYear() - 7;
         const max = min + 9;
         return (
@@ -119,8 +119,9 @@ class BatchRunFilter extends Component {
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
                         id="location.RegionPicker"
-                        preValues={[{ id: NATIONAL_ID, code: '', name: 'National' }]} //Oi0x = :-1, base64 encoded
+                        preValues={[{ id: NATIONAL_ID, code: '', name: formatMessage(intl, "claim_batch", "claim_batch.regions.country") }]}
                         value={(!!filters['accountRegion'] ? filters['accountRegion']['value'] : null)}
+                        withNull={true}
                         onChange={this._onChangeRegion}
                     />
                 </Grid>
@@ -130,6 +131,7 @@ class BatchRunFilter extends Component {
                             id="location.DistrictPicker"
                             value={(filters['accountDistrict'] && filters['accountDistrict']['value'])}
                             region={filters['accountRegion'] && filters['accountRegion']['value']}
+                            withNull={true}
                             onChange={this._onChangeDistrict}
                         />
                     }

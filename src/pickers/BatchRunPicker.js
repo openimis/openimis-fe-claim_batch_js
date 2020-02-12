@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { injectIntl } from 'react-intl';
-import { SelectInput, withModulesManager } from "@openimis/fe-core";
+import { SelectInput, withModulesManager, formatMessage } from "@openimis/fe-core";
 import { fetchBatchRunPicker } from "../actions";
 
 class BatchRunPicker extends Component {
@@ -21,16 +21,16 @@ class BatchRunPicker extends Component {
     )
 
     render() {
-        const { name, scope, batchRuns, value, noneLabel = null } = this.props;
-        let options = [
+        const { name, scope, batchRuns, value, withNull = false, nullLabel = null } = this.props;
+        let options = !!scope ? [
             ...batchRuns.map(v => ({
                 value: v,
                 label: this.formatSuggestion(v)
-            }))]
-        if (!!noneLabel) {
+            }))] : []
+        if (withNull) {
             options.unshift({
                 value: null,
-                label: noneLabel
+                label: nullLabel || formatMessage(this.props.intl, "claim_batch", "BatchRunPicker.null")
             })
         }
         return (

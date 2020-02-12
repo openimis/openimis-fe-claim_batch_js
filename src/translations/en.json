@@ -24,5 +24,6 @@
     "claim_batch.processBatch.confirm.title": "Launch Batch Processing",
     "claim_batch.processBatch.confirm.message": "Are you sure you want to process batches for {location}, {month} {year}?",
     "claim_batch.processBatch.mutationLabel": "Batch Process - {location}, {month} {year}",
-    "claim_batch.regions.country":"National"
+    "claim_batch.regions.country":"National",
+    "claim_batch.BatchRunPicker.null":"Any"
 }
