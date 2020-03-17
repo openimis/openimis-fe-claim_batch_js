@@ -7,9 +7,10 @@ import { fetchBatchRunPicker } from "../actions";
 
 class BatchRunPicker extends Component {
 
-    componentDidUpdate(prevProps, prevState, snapshot) {        
-        if (prevProps.scope !== this.props.scope) {
-            this.props.fetchBatchRunPicker(this.props.modulesManager, this.props.scope);
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.scopeNational !== this.props.scopeNational ||
+            prevProps.scopeDistrict !== this.props.scopeDistrict) {
+            this.props.fetchBatchRunPicker(this.props.modulesManager, this.props.scopeNational, this.props.scopeDistrict);
         }
     }
 
@@ -21,8 +22,8 @@ class BatchRunPicker extends Component {
     )
 
     render() {
-        const { name, scope, batchRuns, value, withNull = false, nullLabel = null } = this.props;
-        let options = !!scope ? [
+        const { name, scopeNational, scopeDistrict, batchRuns, value, withNull = false, nullLabel = null } = this.props;
+        let options = !!scopeNational || !!scopeDistrict ? [
             ...batchRuns.map(v => ({
                 value: v,
                 label: this.formatSuggestion(v)
@@ -35,7 +36,7 @@ class BatchRunPicker extends Component {
         }
         return (
             <SelectInput
-                disabled={!scope}
+                disabled={!scopeNational && !scopeDistrict}
                 module="claim_batch" label="BatchRun"
                 options={options}
                 name={name}

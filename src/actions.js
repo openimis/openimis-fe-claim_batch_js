@@ -4,16 +4,24 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash-uuid";
 
-export function fetchBatchRunPicker(mm, scope) {
-  if (!scope) {
+export function fetchBatchRunPicker(mm, scopeNational, scopeDistrict) {
+  if (!scopeNational && !scopeDistrict) {
     return dispatch => {
       dispatch({ type: 'CLAIM_BATCH_CLAIM_BATCH_PICKER_CLEAR' })
     }
   }
-  const payload = formatPageQuery("batchRuns",
-    [`location_Uuid: "${scope.uuid}"`],
-    mm.getRef("claim_batch.BatchRunPicker.projection")
-  );
+  let payload = null;
+  if (!!scopeDistrict) {
+    payload = formatPageQuery("batchRuns",
+      [`location_Uuid: "${scopeDistrict.uuid}"`],
+      mm.getRef("claim_batch.BatchRunPicker.projection")
+    );
+  } else { //!!scopeNational
+    payload = formatPageQuery("batchRuns",
+      [`location_Isnull: true`],
+      mm.getRef("claim_batch.BatchRunPicker.projection")
+    );
+  }
   return graphql(payload, 'CLAIM_BATCH_CLAIM_BATCH_PICKER');
 }
 
@@ -41,7 +49,7 @@ export function processBatch(location, year, month, clientMutationLabel, clientM
       clientMutationId: mutation.clientMutationId,
       clientMutationLabel,
       clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
-    requestedDateTime
+      requestedDateTime
     }
   )
 }

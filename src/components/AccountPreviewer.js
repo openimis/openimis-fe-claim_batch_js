@@ -8,7 +8,7 @@ import PreviewIcon from "@material-ui/icons/ListAlt";
 import { FormattedMessage, PublishedComponent, ConstantBasedPicker, formatMessage } from "@openimis/fe-core";
 import { preview, generateReport } from "../actions"
 
-import { ACCOUNT_GROUP_BY } from "../constants";
+import { ACCOUNT_GROUP_BY, NATIONAL_ID } from "../constants";
 
 const styles = theme => ({
     paper: {
@@ -50,7 +50,7 @@ class AccountPreviewer extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (!prevProps.generating && !!this.props.generating) {
-            this.props.generateReport({...this.state})
+            this.props.generateReport({ ...this.state })
         }
     }
 
@@ -66,18 +66,20 @@ class AccountPreviewer extends Component {
     }
 
     _onChangeDistrict = (v, s) => {
-        var region = v == null ? null : {
-            id: v.parent.id,
-            uuid: v.parent.uuid,
-            code: v.parent.code,
-            name: v.parent.name
+        if (v !== null) {
+            var region = {
+                id: v.parent.id,
+                uuid: v.parent.uuid,
+                code: v.parent.code,
+                name: v.parent.name
+            }
+            this.setState({
+                region,
+                district: v,
+                healthFacility: null,
+                batchRun: null,
+            });
         }
-        this.setState({
-            region,
-            district: v,
-            healthFacility: null,
-            batchRun: null,
-        });
     }
 
     _onChangeHealthFacility = (v, s) => {
@@ -100,6 +102,10 @@ class AccountPreviewer extends Component {
             healthFacility: v,
             batchRun: null,
         });
+    }
+
+    isNational = () => {
+        return !!this.state.region && this.state.region.id === NATIONAL_ID
     }
 
     render() {
@@ -166,28 +172,33 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.RegionPicker"
+                            preValues={[{ id: NATIONAL_ID, code: '', name: formatMessage(intl, "claim_batch", "claim_batch.regions.country") }]}
                             value={this.state.region}
                             onChange={this._onChangeRegion}
                             withNull={true}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
-                        <PublishedComponent
-                            id="location.DistrictPicker"
-                            region={this.state.region}
-                            value={this.state.district}
-                            onChange={this._onChangeDistrict}
-                            withNull={true}
-                        />
+                        {!this.isNational() && (
+                            <PublishedComponent
+                                id="location.DistrictPicker"
+                                region={this.state.region}
+                                value={this.state.district}
+                                onChange={this._onChangeDistrict}
+                                withNull={true}
+                            />
+                        )}
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
-                        <PublishedComponent
-                            id="location.HealthFacilityPicker"
-                            region={this.state.region}
-                            district={this.state.district}                            
-                            value={this.state.healthFacility}
-                            onChange={this._onChangeHealthFacility}
-                        />
+                        {!this.isNational() && (
+                            <PublishedComponent
+                                id="location.HealthFacilityPicker"
+                                region={this.state.region}
+                                district={this.state.district}
+                                value={this.state.healthFacility}
+                                onChange={this._onChangeHealthFacility}
+                            />
+                        )}
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
@@ -206,7 +217,8 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="claim_batch.BatchRunPicker"
-                            scope={this.state.district}
+                            scopeNational={this.isNational()}
+                            scopeDistrict={this.state.district}
                             value={this.state.batchRun}
                             withNull={true}
                             onChange={(v, s) => this._onChange('batchRun', v)}
