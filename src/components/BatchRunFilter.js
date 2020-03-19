@@ -48,11 +48,7 @@ class BatchRunFilter extends Component {
     _onChangeDistrict = (v, s) => {
         var filters = []
         if (!!v) {
-            filters.push(this._regionFilter({
-                id: v.regionId,
-                code: v.regionCode,
-                name: v.regionName
-            }));
+            filters.push(this._regionFilter(v.parent));
         }
         filters.push(
             {
