@@ -1,5 +1,6 @@
 {
     "claim_batch.menu.claim_batch": "Batch Runs",
+    "claim_batch.claimBatch.page.title": "Batch Runs",
     "claim_batch.BatchRun": "Batch Run",
     "claim_batch.BatchRunLauncher.title": "Launch Batch Run",
     "claim_batch.BatchRunSearcher.title": "Relative Indexes ({totalCount})",
