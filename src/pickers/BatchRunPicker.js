@@ -2,9 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { injectIntl } from 'react-intl';
-import { SelectInput, withModulesManager, formatMessage } from "@openimis/fe-core";
+import { SelectInput, withModulesManager, formatMessage, formatMessageWithValues } from "@openimis/fe-core";
 import { fetchBatchRunPicker } from "../actions";
-import { formatMessageWithValues } from "@openimis/fe-core/src/helpers/i18n";
 
 class BatchRunPicker extends Component {
 
