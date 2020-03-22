@@ -4,13 +4,19 @@ import { bindActionCreators } from "redux";
 import { injectIntl } from 'react-intl';
 import { SelectInput, withModulesManager, formatMessage } from "@openimis/fe-core";
 import { fetchBatchRunPicker } from "../actions";
+import { formatMessageWithValues } from "@openimis/fe-core/src/helpers/i18n";
 
 class BatchRunPicker extends Component {
 
+    constructor(props) {
+        super(props)
+        props.fetchBatchRunPicker(props.modulesManager, props.scopeRegion, props.scopeDistrict)
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.scopeNational !== this.props.scopeNational ||
+        if (prevProps.scopeRegion !== this.props.scopeRegion ||
             prevProps.scopeDistrict !== this.props.scopeDistrict) {
-            this.props.fetchBatchRunPicker(this.props.modulesManager, this.props.scopeNational, this.props.scopeDistrict);
+            this.props.fetchBatchRunPicker(this.props.modulesManager, this.props.scopeRegion, this.props.scopeDistrict);
         }
     }
 
@@ -21,13 +27,19 @@ class BatchRunPicker extends Component {
         this.formatSuggestion(v)
     )
 
+    locationStr = () => {
+        if (!!this.props.scopeDistrict) return this.props.scopeDistrict.code;
+        if (!!this.props.scopeRegion) return this.props.scopeRegion.code;
+        return formatMessage(this.props.intl, "claim_batch", "regions.country")
+    }
+
     render() {
-        const { name, scopeNational, scopeDistrict, batchRuns, value, withNull = false, nullLabel = null } = this.props;
-        let options = !!scopeNational || !!scopeDistrict ? [
+        const { name, scopeRegion, scopeDistrict, batchRuns, value, withNull = false, nullLabel = null } = this.props;
+        let options = [
             ...batchRuns.map(v => ({
                 value: v,
                 label: this.formatSuggestion(v)
-            }))] : []
+            }))]
         if (withNull) {
             options.unshift({
                 value: null,
@@ -36,8 +48,8 @@ class BatchRunPicker extends Component {
         }
         return (
             <SelectInput
-                disabled={!scopeNational && !scopeDistrict}
-                module="claim_batch" label="BatchRun"
+                module="claim_batch"
+                strLabel={formatMessageWithValues(this.props.intl, "claim_batch", "BatchRun", { location: this.locationStr() })}
                 options={options}
                 name={name}
                 value={value}

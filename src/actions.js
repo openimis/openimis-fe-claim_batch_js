@@ -4,24 +4,20 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash-uuid";
 
-export function fetchBatchRunPicker(mm, scopeNational, scopeDistrict) {
-  if (!scopeNational && !scopeDistrict) {
-    return dispatch => {
-      dispatch({ type: 'CLAIM_BATCH_CLAIM_BATCH_PICKER_CLEAR' })
-    }
-  }
-  let payload = null;
+export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict) {
+  var filters = ['orderBy: "-runDate"']
+  var payload = null;
   if (!!scopeDistrict) {
-    payload = formatPageQuery("batchRuns",
-      [`location_Uuid: "${scopeDistrict.uuid}"`],
-      mm.getRef("claim_batch.BatchRunPicker.projection")
-    );
+    filters.push([`location_Uuid: "${scopeDistrict.uuid}"`])
+  } else if (!!scopeRegion) {
+    filters.push(`location_Uuid: "${scopeRegion.uuid}"`)
   } else { //!!scopeNational
-    payload = formatPageQuery("batchRuns",
-      [`location_Isnull: true`],
-      mm.getRef("claim_batch.BatchRunPicker.projection")
-    );
+    filters.push(`location_Isnull: true`)
   }
+  payload = formatPageQuery("batchRuns",
+    filters,
+    mm.getRef("claim_batch.BatchRunPicker.projection")
+  );
   return graphql(payload, 'CLAIM_BATCH_CLAIM_BATCH_PICKER');
 }
 
@@ -60,9 +56,15 @@ export function preview() {
   }
 }
 
+function prmsLocationId(prms) {
+  if (!!prms.district) return decodeId(prms.district.id)
+  if (!!prms.region) return decodeId(prms.region.id)
+  return 0
+}
+
 export function generateReport(prms) {
   var qParams = {
-    locationId: !prms.region ? 0 : decodeId(prms.region.id),
+    locationId: prmsLocationId(prms),
     regionCode: !prms.region ? '' : prms.region.code,
     regionName: !prms.region ? '' : prms.region.name,
     prodId: !prms.product ? 0 : decodeId(prms.product.id),

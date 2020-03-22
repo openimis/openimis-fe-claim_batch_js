@@ -10,7 +10,6 @@ import {
     PublishedComponent, coreConfirm, journalize
 } from "@openimis/fe-core";
 import { processBatch } from "../actions";
-import { NATIONAL_ID } from "../constants";
 
 const styles = theme => ({
     paper: {
@@ -33,7 +32,7 @@ class BatchRunLauncher extends Component {
     state = {
         region: null,
         district: null,
-        districtStr: null,
+        locationStr: null,
         year: null,
         month: null,
         monthStr: null,
@@ -44,7 +43,7 @@ class BatchRunLauncher extends Component {
             formatMessage(this.props.intl, "claim_batch", "processBatch.confirm.title"),
             formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.confirm.message",
                 {
-                    location: !!this.state.region && this.state.region.id === NATIONAL_ID ? this.state.region.name : this.state.districtStr,
+                    location: this.state.locationStr || formatMessage(this.props.intl, "claim_batch", "claim_batch.regions.country"),
                     year: this.state.year,
                     month: this.state.monthStr,
                 }),
@@ -54,12 +53,12 @@ class BatchRunLauncher extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.confirmed !== this.props.confirmed && !!this.props.confirmed) {
             this.props.processBatch(
-                !!this.state.region && this.state.region.id === NATIONAL_ID ? this.state.region : this.state.district,
+                this.state.district || this.state.region,
                 this.state.year,
                 this.state.month,
                 formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.mutationLabel",
                     {
-                        location: this.state.districtStr,
+                        location: this.state.locationStr || formatMessage(this.props.intl, "claim_batch", "claim_batch.regions.country"),
                         year: this.state.year,
                         month: this.state.monthStr,
                     })
@@ -69,20 +68,21 @@ class BatchRunLauncher extends Component {
         }
     }
 
-    canLaunch = () => ((!!this.state.region && this.state.region.id === NATIONAL_ID) || !!this.state.district) &&
-        !!this.state.year &&
-        !!this.state.month
+    canLaunch = () => !!this.state.year && !!this.state.month
+
+    onChangeRegion = (v, s) => {
+        this.setState({
+            region: v,
+            district: null,
+            locationStr: s
+        })
+    }
 
     onChangeDistrict = (v, s) => {
         this.setState({
-            region: !!v ? {
-                id: v.parent.id,
-                uuid: v.parent.uuid,
-                code: v.parent.code,
-                name: v.parent.name
-            } : null,
+            region: !!v ? v.parent : null,
             district: v,
-            districtStr: s
+            locationStr: s
         });
     }
 
@@ -111,25 +111,20 @@ class BatchRunLauncher extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.RegionPicker"
-                            preValues={[{ id: NATIONAL_ID, code: '', name: formatMessage(intl, "claim_batch", "claim_batch.regions.country") }]}
                             value={this.state.region}
                             withNull={true}
-                            onChange={(v, s) => this.setState({
-                                region: v,
-                                district: null,
-                            })}
+                            nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
+                            onChange={this.onChangeRegion}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
-                        {(!this.state.region || this.state.region.id !== NATIONAL_ID) &&
-                            <PublishedComponent
-                                id="location.DistrictPicker"
-                                region={this.state.region}
-                                value={this.state.district}
-                                withNull={true}
-                                onChange={this.onChangeDistrict}
-                            />
-                        }
+                        <PublishedComponent
+                            id="location.DistrictPicker"
+                            region={this.state.region}
+                            value={this.state.district}
+                            withNull={true}
+                            onChange={this.onChangeDistrict}
+                        />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent

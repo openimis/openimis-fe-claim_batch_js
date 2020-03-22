@@ -24,6 +24,12 @@ class BatchRunFilter extends Component {
         reset: 0
     }
 
+    _filterValue = k => {
+        const { filters } = this.props;
+        return !!filters[k] ? filters[k].value : null
+    }
+
+
     _regionFilter = v => {
         return {
             id: 'accountRegion',
@@ -32,32 +38,29 @@ class BatchRunFilter extends Component {
         }
     }
 
-    _onChangeRegion = (v, s) => {
+    _districtFilter = v => {
+        return {
+            id: 'accountDistrict',
+            value: v,
+            filter: !!v ? `accountDistrict: ${decodeId(v.id)}` : null
+        }
+    }
+
+    onChangeRegion = (v, s) => {
         this.props.onChangeFilters([
             this._regionFilter(v),
-            {
-                id: 'accountDistrict',
-                value: null
-            }
+            this._districtFilter(null),
         ]);
         this.setState({
             reset: this.state.reset + 1,
         });
     }
 
-    _onChangeDistrict = (v, s) => {
-        var filters = []
-        if (!!v) {
-            filters.push(this._regionFilter(v.parent));
-        }
-        filters.push(
-            {
-                id: 'accountDistrict',
-                value: v,
-                filter: !!v ? `accountDistrict: ${decodeId(v.id)}` : null
-            }
-        );
-        this.props.onChangeFilters(filters);
+    onChangeDistrict = (v, s) => {
+        this.props.onChangeFilters([
+            this._regionFilter(!!v ? v.parent : this._filterValue('accountRegion')),
+            this._districtFilter(v)
+        ]);
         this.setState({
             reset: this.state.reset + 1,
         });
@@ -115,22 +118,20 @@ class BatchRunFilter extends Component {
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
                         id="location.RegionPicker"
-                        preValues={[{ id: NATIONAL_ID, code: '', name: formatMessage(intl, "claim_batch", "claim_batch.regions.country") }]}
                         value={(!!filters['accountRegion'] ? filters['accountRegion']['value'] : null)}
                         withNull={true}
-                        onChange={this._onChangeRegion}
+                        nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
+                        onChange={this.onChangeRegion}
                     />
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
-                    {(!filters['accountRegion'] || filters['accountRegion']['value']['id'] !== NATIONAL_ID) &&
-                        <PublishedComponent
-                            id="location.DistrictPicker"
-                            value={(filters['accountDistrict'] && filters['accountDistrict']['value'])}
-                            region={filters['accountRegion'] && filters['accountRegion']['value']}
-                            withNull={true}
-                            onChange={this._onChangeDistrict}
-                        />
-                    }
+                    <PublishedComponent
+                        id="location.DistrictPicker"
+                        value={(filters['accountDistrict'] && filters['accountDistrict']['value'])}
+                        region={filters['accountRegion'] && filters['accountRegion']['value']}
+                        withNull={true}
+                        onChange={this.onChangeDistrict}
+                    />
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent

@@ -1,6 +1,6 @@
 {
   "name": "@openimis/fe-claim_batch",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "openIMIS Frontend Claim Batch reference module",
   "license": "AGPL-3.0-only",
   "repository": "openimis/openimis-fe-claim_batch_js",

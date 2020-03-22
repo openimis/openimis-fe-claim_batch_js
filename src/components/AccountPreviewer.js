@@ -104,10 +104,6 @@ class AccountPreviewer extends Component {
         });
     }
 
-    isNational = () => {
-        return !!this.state.region && this.state.region.id === NATIONAL_ID
-    }
-
     render() {
         const { intl, classes, generating } = this.props;
         return (
@@ -172,33 +168,29 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.RegionPicker"
-                            preValues={[{ id: NATIONAL_ID, code: '', name: formatMessage(intl, "claim_batch", "claim_batch.regions.country") }]}
                             value={this.state.region}
                             onChange={this._onChangeRegion}
+                            withNull={true}
+                            nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country") }
+                        />
+                    </Grid>
+                    <Grid item xs={3} className={classes.item}>
+                        <PublishedComponent
+                            id="location.DistrictPicker"
+                            region={this.state.region}
+                            value={this.state.district}
+                            onChange={this._onChangeDistrict}
                             withNull={true}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
-                        {!this.isNational() && (
-                            <PublishedComponent
-                                id="location.DistrictPicker"
-                                region={this.state.region}
-                                value={this.state.district}
-                                onChange={this._onChangeDistrict}
-                                withNull={true}
-                            />
-                        )}
-                    </Grid>
-                    <Grid item xs={3} className={classes.item}>
-                        {!this.isNational() && (
-                            <PublishedComponent
-                                id="location.HealthFacilityPicker"
-                                region={this.state.region}
-                                district={this.state.district}
-                                value={this.state.healthFacility}
-                                onChange={this._onChangeHealthFacility}
-                            />
-                        )}
+                        <PublishedComponent
+                            id="location.HealthFacilityPicker"
+                            region={this.state.region}
+                            district={this.state.district}
+                            value={this.state.healthFacility}
+                            onChange={this._onChangeHealthFacility}
+                        />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
@@ -217,7 +209,7 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="claim_batch.BatchRunPicker"
-                            scopeNational={this.isNational()}
+                            scopeRegion={this.state.region}
                             scopeDistrict={this.state.district}
                             value={this.state.batchRun}
                             withNull={true}
