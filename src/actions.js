@@ -32,7 +32,7 @@ export function fetchBatchRunSummaries(mm, filters) {
 
 export function processBatch(location, year, month, clientMutationLabel, clientMutationDetails = null) {
   let input = `
-    locationId: ${decodeId(location.id)}
+    ${!!location ? `locationId: ${decodeId(location.id)}` : ''}
     month: ${month}
     year: ${year}
   `
