@@ -3,6 +3,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import _ from "lodash";
 import { Paper, Grid, IconButton, Divider, FormControlLabel, Checkbox, CircularProgress } from "@material-ui/core";
 import PreviewIcon from "@material-ui/icons/ListAlt";
 import { FormattedMessage, PublishedComponent, ConstantBasedPicker, formatMessage } from "@openimis/fe-core";
@@ -48,9 +49,29 @@ class AccountPreviewer extends Component {
         showClaims: false,
     }
 
+    componentDidMount() {
+        if (!!this.props.userHealthFacilityFullPath) {
+            this.setState({
+                region: this.props.userHealthFacilityFullPath.location.parent,
+                district: this.props.userHealthFacilityFullPath.location,
+                healthFacility: this.props.userHealthFacilityFullPath,
+                batchRun: null,
+            });
+        }
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (!prevProps.generating && !!this.props.generating) {
             this.props.generateReport({ ...this.state })
+        } else if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath)) {
+            if (!!this.props.userHealthFacilityFullPath) {
+                this.setState({
+                    region: this.props.userHealthFacilityFullPath.location.parent,
+                    district: this.props.userHealthFacilityFullPath.location,
+                    healthFacility: this.props.userHealthFacilityFullPath,
+                    batchRun: null,
+                });
+            }
         }
     }
 
@@ -66,39 +87,18 @@ class AccountPreviewer extends Component {
     }
 
     _onChangeDistrict = (v, s) => {
-        if (v !== null) {
-            var region = {
-                id: v.parent.id,
-                uuid: v.parent.uuid,
-                code: v.parent.code,
-                name: v.parent.name
-            }
-            this.setState({
-                region,
-                district: v,
-                healthFacility: null,
-                batchRun: null,
-            });
-        }
+        this.setState({
+            region: v !== null ? v.parent : this.state.region,
+            district: v,
+            healthFacility: null,
+            batchRun: null,
+        });
     }
 
     _onChangeHealthFacility = (v, s) => {
-        var region = v == null ? null : {
-            id: v.location.parent.id,
-            uuid: v.location.parent.uuid,
-            code: v.location.parent.code,
-            name: v.location.parent.name,
-        }
-        var district = v == null ? null : {
-            id: v.location.id,
-            uuid: v.location.uuid,
-            code: v.location.code,
-            name: v.location.name,
-            parent: v.location.parent,
-        }
         this.setState({
-            region,
-            district,
+            region: v !== null ? v.location.parent : this.state.region,
+            district: v !== null ? v.location : this.state.district,
             healthFacility: v,
             batchRun: null,
         });
@@ -171,7 +171,7 @@ class AccountPreviewer extends Component {
                             value={this.state.region}
                             onChange={this._onChangeRegion}
                             withNull={true}
-                            nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country") }
+                            nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
@@ -223,6 +223,7 @@ class AccountPreviewer extends Component {
 }
 
 const mapStateToProps = state => ({
+    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
     generating: state.claim_batch.generating,
 });
 

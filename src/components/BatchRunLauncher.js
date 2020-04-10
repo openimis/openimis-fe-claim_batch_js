@@ -3,6 +3,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import _ from "lodash";
 import { Paper, Grid, Divider, IconButton } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 import {
@@ -50,7 +51,26 @@ class BatchRunLauncher extends Component {
         );
     }
 
+    componentDidMount() {
+        if (!!this.props.userHealthFacilityFullPath) {
+            this.setState({
+                region: this.props.userHealthFacilityFullPath.location.parent,
+                district: this.props.userHealthFacilityFullPath.location,
+                locationStr: this.props.userHealthFacilityLocationStr,
+            })
+        }
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath) &&
+            !!this.props.userHealthFacilityFullPath
+        ) {
+            this.setState({
+                region: this.props.userHealthFacilityFullPath.location.parent,
+                district: this.props.userHealthFacilityFullPath.location,
+                locationStr: this.props.userHealthFacilityLocationStr,
+            })
+        }
         if (prevProps.confirmed !== this.props.confirmed && !!this.props.confirmed) {
             this.props.processBatch(
                 this.state.district || this.state.region,
@@ -153,6 +173,8 @@ class BatchRunLauncher extends Component {
 }
 
 const mapStateToProps = state => ({
+    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
+    userHealthFacilityLocationStr: !!state.loc ? state.loc.userHealthFacilityLocationStr : null,
     confirmed: state.core.confirmed,
     submittingMutation: state.claim_batch.submittingMutation,
     mutation: state.claim_batch.mutation,

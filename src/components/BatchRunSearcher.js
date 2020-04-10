@@ -3,7 +3,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { FormattedMessage, withModulesManager, Table, PublishedComponent, ProgressOrError } from "@openimis/fe-core";
+import { FormattedMessage, withModulesManager, Table, PublishedComponent, ProgressOrError, decodeId } from "@openimis/fe-core";
 import BatchRunFilter from "./BatchRunFilter";
 import { Grid, Paper, IconButton } from "@material-ui/core";
 import { fetchBatchRunSummaries } from "../actions";
@@ -30,7 +30,7 @@ class BatchRunSearcher extends Component {
     state = {
         filters: {},
         page: 0,
-        pageSize: 0,
+        pageSize: 10,
         afterCursor: null,
         beforeCursor: null,
     }
@@ -41,9 +41,33 @@ class BatchRunSearcher extends Component {
         this.defaultPageSize = props.modulesManager.getConf("fe-claim_batch", "claim_batchFilter.defaultPageSize", 10);
     }
 
+    _regionFilter = v => {
+        return {
+            id: 'accountRegion',
+            value: v,
+            filter: !!v ? `accountRegion: ${decodeId(v.id)}` : null
+        }
+    }
+
+    _districtFilter = v => {
+        return {
+            id: 'accountDistrict',
+            value: v,
+            filter: !!v ? `accountDistrict: ${decodeId(v.id)}` : null
+        }
+    }
+
     componentDidMount() {
+        var filters = {}
+        if (!!this.props.userHealthFacilityFullPath) {
+            var location = this.props.userHealthFacilityFullPath.location
+            var accountRegion = this._regionFilter(location.parent)
+            var accountDistrict = this._districtFilter(location)
+            filters = { accountRegion, accountDistrict }
+        }
         this.setState({
             pageSize: this.defaultPageSize,
+            filters,
         },
             e => this.props.fetchBatchRunSummaries(
                 this.props.modulesManager,
@@ -51,6 +75,40 @@ class BatchRunSearcher extends Component {
             )
         );
     }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath) &&
+            !!this.props.userHealthFacilityFullPath
+        ) {
+            var location = this.props.userHealthFacilityFullPath.location
+            var accountRegion = this._regionFilter(location.parent)
+            var accountDistrict = this._districtFilter(location)
+            this.setState({
+                filters: { accountRegion, accountDistrict }
+            },
+                e => this.props.fetchBatchRunSummaries(
+                    this.props.modulesManager,
+                    this.filtersToQueryParams()
+                )
+            )
+        }
+    }
+
+
+    onChangeRegion = (v, s) => {
+        this.onChangeFilters([
+            this._regionFilter(v),
+            this._districtFilter(null),
+        ]);
+    }
+
+    onChangeDistrict = (v, s) => {
+        this.onChangeFilters([
+            this._regionFilter(!!v ? v.parent : this._filterValue('accountRegion')),
+            this._districtFilter(v)
+        ]);
+    }
+
 
     filtersToQueryParams = () => {
         let prms = Object.keys(this.state.filters).map(f => this.state.filters[f]['filter']);
@@ -162,6 +220,8 @@ class BatchRunSearcher extends Component {
                         <BatchRunFilter
                             filters={this.state.filters}
                             apply={this.applyFilters}
+                            onChangeRegion={this.onChangeRegion}
+                            onChangeDistrict={this.onChangeDistrict}
                             onChangeFilters={this.onChangeFilters}
                         />
                     </Grid>
@@ -220,6 +280,7 @@ class BatchRunSearcher extends Component {
 }
 
 const mapStateToProps = state => ({
+    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
     batchRunSearcher: state.claim_batch.batchRunSearcher,
     batchRunSearcherPageInfo: state.claim_batch.batchRunSearcherPageInfo,
     fetchingBatchRunSearcher: state.claim_batch.fetchingBatchRunSearcher,

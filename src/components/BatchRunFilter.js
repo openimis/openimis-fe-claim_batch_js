@@ -4,7 +4,6 @@ import { injectIntl } from 'react-intl';
 
 import { Grid } from "@material-ui/core";
 import { withModulesManager, PublishedComponent, decodeId, formatMessage } from "@openimis/fe-core";
-import { NATIONAL_ID } from "../constants";
 
 const styles = theme => ({
     dialogTitle: theme.dialog.title,
@@ -29,45 +28,8 @@ class BatchRunFilter extends Component {
         return !!filters[k] ? filters[k].value : null
     }
 
-
-    _regionFilter = v => {
-        return {
-            id: 'accountRegion',
-            value: v,
-            filter: !!v ? `accountRegion: ${decodeId(v.id)}` : null
-        }
-    }
-
-    _districtFilter = v => {
-        return {
-            id: 'accountDistrict',
-            value: v,
-            filter: !!v ? `accountDistrict: ${decodeId(v.id)}` : null
-        }
-    }
-
-    onChangeRegion = (v, s) => {
-        this.props.onChangeFilters([
-            this._regionFilter(v),
-            this._districtFilter(null),
-        ]);
-        this.setState({
-            reset: this.state.reset + 1,
-        });
-    }
-
-    onChangeDistrict = (v, s) => {
-        this.props.onChangeFilters([
-            this._regionFilter(!!v ? v.parent : this._filterValue('accountRegion')),
-            this._districtFilter(v)
-        ]);
-        this.setState({
-            reset: this.state.reset + 1,
-        });
-    }
-
     render() {
-        const { intl, classes, filters, onChangeFilters } = this.props;
+        const { intl, classes, filters, onChangeRegion, onChangeDistrict, onChangeFilters } = this.props;
         const min = new Date().getFullYear() - 7;
         const max = min + 9;
         return (
@@ -121,7 +83,7 @@ class BatchRunFilter extends Component {
                         value={(!!filters['accountRegion'] ? filters['accountRegion']['value'] : null)}
                         withNull={true}
                         nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
-                        onChange={this.onChangeRegion}
+                        onChange={onChangeRegion}
                     />
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
@@ -130,7 +92,7 @@ class BatchRunFilter extends Component {
                         value={(filters['accountDistrict'] && filters['accountDistrict']['value'])}
                         region={filters['accountRegion'] && filters['accountRegion']['value']}
                         withNull={true}
-                        onChange={this.onChangeDistrict}
+                        onChange={onChangeDistrict}
                     />
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
