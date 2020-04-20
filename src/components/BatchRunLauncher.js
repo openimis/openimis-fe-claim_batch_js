@@ -3,6 +3,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import _ from "lodash";
 import { Paper, Grid, Divider, IconButton } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 import {
@@ -10,7 +11,6 @@ import {
     PublishedComponent, coreConfirm, journalize
 } from "@openimis/fe-core";
 import { processBatch } from "../actions";
-import { NATIONAL_ID } from "../constants";
 
 const styles = theme => ({
     paper: {
@@ -33,7 +33,7 @@ class BatchRunLauncher extends Component {
     state = {
         region: null,
         district: null,
-        districtStr: null,
+        locationStr: null,
         year: null,
         month: null,
         monthStr: null,
@@ -44,22 +44,41 @@ class BatchRunLauncher extends Component {
             formatMessage(this.props.intl, "claim_batch", "processBatch.confirm.title"),
             formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.confirm.message",
                 {
-                    location: !!this.state.region && this.state.region.id === NATIONAL_ID ? this.state.region.name : this.state.districtStr,
+                    location: this.state.locationStr || formatMessage(this.props.intl, "claim_batch", "claim_batch.regions.country"),
                     year: this.state.year,
                     month: this.state.monthStr,
                 }),
         );
     }
 
+    componentDidMount() {
+        if (!!this.props.userHealthFacilityFullPath) {
+            this.setState({
+                region: this.props.userHealthFacilityFullPath.location.parent,
+                district: this.props.userHealthFacilityFullPath.location,
+                locationStr: this.props.userHealthFacilityLocationStr,
+            })
+        }
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath) &&
+            !!this.props.userHealthFacilityFullPath
+        ) {
+            this.setState({
+                region: this.props.userHealthFacilityFullPath.location.parent,
+                district: this.props.userHealthFacilityFullPath.location,
+                locationStr: this.props.userHealthFacilityLocationStr,
+            })
+        }
         if (prevProps.confirmed !== this.props.confirmed && !!this.props.confirmed) {
             this.props.processBatch(
-                !!this.state.region && this.state.region.id === NATIONAL_ID ? this.state.region : this.state.district,
+                this.state.district || this.state.region,
                 this.state.year,
                 this.state.month,
                 formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.mutationLabel",
                     {
-                        location: this.state.districtStr,
+                        location: this.state.locationStr || formatMessage(this.props.intl, "claim_batch", "claim_batch.regions.country"),
                         year: this.state.year,
                         month: this.state.monthStr,
                     })
@@ -69,25 +88,26 @@ class BatchRunLauncher extends Component {
         }
     }
 
-    canLaunch = () => ((!!this.state.region && this.state.region.id === NATIONAL_ID) || !!this.state.district) &&
-        !!this.state.year &&
-        !!this.state.month
+    canLaunch = () => !!this.state.year && !!this.state.month
+
+    onChangeRegion = (v, s) => {
+        this.setState({
+            region: v,
+            district: null,
+            locationStr: s
+        })
+    }
 
     onChangeDistrict = (v, s) => {
         this.setState({
-            region: {
-                id: v.regionId,
-                uuid: v.regionUuid,
-                code: v.regionCode,
-                name: v.regionName
-            },
+            region: !!v ? v.parent : null,
             district: v,
-            districtStr: s
+            locationStr: s
         });
     }
 
     render() {
-        const { classes } = this.props;
+        const { intl, classes } = this.props;
         const min = new Date().getFullYear() - 7;
         const max = min + 9;
         return (
@@ -111,23 +131,20 @@ class BatchRunLauncher extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.RegionPicker"
-                            preValues={[{ id: NATIONAL_ID, code: '', name: 'National' }]}
                             value={this.state.region}
-                            onChange={(v, s) => this.setState({
-                                region: v,
-                                district: null,
-                            })}
+                            withNull={true}
+                            nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
+                            onChange={this.onChangeRegion}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
-                        {(!this.state.region || this.state.region.id !== NATIONAL_ID) &&
-                            <PublishedComponent
-                                id="location.DistrictPicker"
-                                region={this.state.region}
-                                value={this.state.district}
-                                onChange={this.onChangeDistrict}
-                            />
-                        }
+                        <PublishedComponent
+                            id="location.DistrictPicker"
+                            region={this.state.region}
+                            value={this.state.district}
+                            withNull={true}
+                            onChange={this.onChangeDistrict}
+                        />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
@@ -156,6 +173,8 @@ class BatchRunLauncher extends Component {
 }
 
 const mapStateToProps = state => ({
+    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
+    userHealthFacilityLocationStr: !!state.loc ? state.loc.userHealthFacilityLocationStr : null,
     confirmed: state.core.confirmed,
     submittingMutation: state.claim_batch.submittingMutation,
     mutation: state.claim_batch.mutation,

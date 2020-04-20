@@ -3,12 +3,13 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from 'react-intl';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import _ from "lodash";
 import { Paper, Grid, IconButton, Divider, FormControlLabel, Checkbox, CircularProgress } from "@material-ui/core";
 import PreviewIcon from "@material-ui/icons/ListAlt";
 import { FormattedMessage, PublishedComponent, ConstantBasedPicker, formatMessage } from "@openimis/fe-core";
 import { preview, generateReport } from "../actions"
 
-import { ACCOUNT_GROUP_BY } from "../constants";
+import { ACCOUNT_GROUP_BY, NATIONAL_ID } from "../constants";
 
 const styles = theme => ({
     paper: {
@@ -48,9 +49,29 @@ class AccountPreviewer extends Component {
         showClaims: false,
     }
 
+    componentDidMount() {
+        if (!!this.props.userHealthFacilityFullPath) {
+            this.setState({
+                region: this.props.userHealthFacilityFullPath.location.parent,
+                district: this.props.userHealthFacilityFullPath.location,
+                healthFacility: this.props.userHealthFacilityFullPath,
+                batchRun: null,
+            });
+        }
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (!prevProps.generating && !!this.props.generating) {
-            this.props.generateReport({...this.state})
+            this.props.generateReport({ ...this.state })
+        } else if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath)) {
+            if (!!this.props.userHealthFacilityFullPath) {
+                this.setState({
+                    region: this.props.userHealthFacilityFullPath.location.parent,
+                    district: this.props.userHealthFacilityFullPath.location,
+                    healthFacility: this.props.userHealthFacilityFullPath,
+                    batchRun: null,
+                });
+            }
         }
     }
 
@@ -60,38 +81,26 @@ class AccountPreviewer extends Component {
         this.setState({
             region: v,
             district: null,
-            healthFacility: null
+            healthFacility: null,
+            batchRun: null,
         });
     }
 
     _onChangeDistrict = (v, s) => {
-        var region = v == null ? null : {
-            id: v.regionId,
-            code: v.regionCode,
-            name: v.regionName
-        }
         this.setState({
-            region,
+            region: v !== null ? v.parent : this.state.region,
             district: v,
-            healthFacility: null
+            healthFacility: null,
+            batchRun: null,
         });
     }
 
     _onChangeHealthFacility = (v, s) => {
-        var region = v == null ? null : {
-            id: v.location.parent.id,
-            code: v.location.parent.code,
-            name: v.location.parent.name
-        }
-        var district = v == null ? null : {
-            id: v.location.id,
-            code: v.location.code,
-            name: v.location.name
-        }
         this.setState({
-            region,
-            district,
-            healthFacility: v
+            region: v !== null ? v.location.parent : this.state.region,
+            district: v !== null ? v.location : this.state.district,
+            healthFacility: v,
+            batchRun: null,
         });
     }
 
@@ -159,23 +168,26 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.RegionPicker"
-                            onChange={this._onChange}
                             value={this.state.region}
                             onChange={this._onChangeRegion}
+                            withNull={true}
+                            nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.DistrictPicker"
-                            onChange={this._onChange}
+                            region={this.state.region}
                             value={this.state.district}
                             onChange={this._onChangeDistrict}
+                            withNull={true}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.HealthFacilityPicker"
-                            onChange={this._onChange}
+                            region={this.state.region}
+                            district={this.state.district}
                             value={this.state.healthFacility}
                             onChange={this._onChangeHealthFacility}
                         />
@@ -183,7 +195,6 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="location.HealthFacilityLevelPicker"
-                            onChange={this._onChange}
                             value={this.state.healthFacilityLevel}
                             onChange={(v, s) => this._onChange('healthFacilityLevel', v)}
                         />
@@ -191,7 +202,6 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="product.ProductPicker"
-                            onChange={this._onChange}
                             value={this.state.product}
                             onChange={(v, s) => this._onChange('product', v)}
                         />
@@ -199,9 +209,10 @@ class AccountPreviewer extends Component {
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
                             id="claim_batch.BatchRunPicker"
-                            scope={this.state.district}
-                            onChange={this._onChange}
+                            scopeRegion={this.state.region}
+                            scopeDistrict={this.state.district}
                             value={this.state.batchRun}
+                            withNull={true}
                             onChange={(v, s) => this._onChange('batchRun', v)}
                         />
                     </Grid>
@@ -212,6 +223,7 @@ class AccountPreviewer extends Component {
 }
 
 const mapStateToProps = state => ({
+    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
     generating: state.claim_batch.generating,
 });
 

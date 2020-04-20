@@ -4,14 +4,18 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash-uuid";
 
-export function fetchBatchRunPicker(mm, scope) {
-  if (!scope) {
-    return dispatch => {
-      dispatch({ type: 'CLAIM_BATCH_CLAIM_BATCH_PICKER_CLEAR' })
-    }
+export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict) {
+  var filters = ['orderBy: "-runDate"']
+  var payload = null;
+  if (!!scopeDistrict) {
+    filters.push([`location_Uuid: "${scopeDistrict.uuid}"`])
+  } else if (!!scopeRegion) {
+    filters.push(`location_Uuid: "${scopeRegion.uuid}"`)
+  } else { //!!scopeNational
+    filters.push(`location_Isnull: true`)
   }
-  const payload = formatPageQuery("batchRuns",
-    [`location_Uuid: "${scope.uuid}"`],
+  payload = formatPageQuery("batchRuns",
+    filters,
     mm.getRef("claim_batch.BatchRunPicker.projection")
   );
   return graphql(payload, 'CLAIM_BATCH_CLAIM_BATCH_PICKER');
@@ -28,7 +32,7 @@ export function fetchBatchRunSummaries(mm, filters) {
 
 export function processBatch(location, year, month, clientMutationLabel, clientMutationDetails = null) {
   let input = `
-    locationId: ${decodeId(location.id)}
+    ${!!location ? `locationId: ${decodeId(location.id)}` : ''}
     month: ${month}
     year: ${year}
   `
@@ -41,7 +45,7 @@ export function processBatch(location, year, month, clientMutationLabel, clientM
       clientMutationId: mutation.clientMutationId,
       clientMutationLabel,
       clientMutationDetails: !!clientMutationDetails ? JSON.stringify(clientMutationDetails) : null,
-    requestedDateTime
+      requestedDateTime
     }
   )
 }
@@ -52,9 +56,15 @@ export function preview() {
   }
 }
 
+function prmsLocationId(prms) {
+  if (!!prms.district) return decodeId(prms.district.id)
+  if (!!prms.region) return decodeId(prms.region.id)
+  return 0
+}
+
 export function generateReport(prms) {
   var qParams = {
-    locationId: !prms.region ? 0 : decodeId(prms.region.id),
+    locationId: prmsLocationId(prms),
     regionCode: !prms.region ? '' : prms.region.code,
     regionName: !prms.region ? '' : prms.region.name,
     prodId: !prms.product ? 0 : decodeId(prms.product.id),

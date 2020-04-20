@@ -2,14 +2,20 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { injectIntl } from 'react-intl';
-import { SelectInput, withModulesManager } from "@openimis/fe-core";
+import { SelectInput, withModulesManager, formatMessage, formatMessageWithValues } from "@openimis/fe-core";
 import { fetchBatchRunPicker } from "../actions";
 
 class BatchRunPicker extends Component {
 
-    componentDidUpdate(prevProps, prevState, snapshot) {        
-        if (prevProps.scope !== this.props.scope) {
-            this.props.fetchBatchRunPicker(this.props.modulesManager, this.props.scope);
+    constructor(props) {
+        super(props)
+        props.fetchBatchRunPicker(props.modulesManager, props.scopeRegion, props.scopeDistrict)
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.scopeRegion !== this.props.scopeRegion ||
+            prevProps.scopeDistrict !== this.props.scopeDistrict) {
+            this.props.fetchBatchRunPicker(this.props.modulesManager, this.props.scopeRegion, this.props.scopeDistrict);
         }
     }
 
@@ -20,23 +26,29 @@ class BatchRunPicker extends Component {
         this.formatSuggestion(v)
     )
 
+    locationStr = () => {
+        if (!!this.props.scopeDistrict) return this.props.scopeDistrict.code;
+        if (!!this.props.scopeRegion) return this.props.scopeRegion.code;
+        return formatMessage(this.props.intl, "claim_batch", "regions.country")
+    }
+
     render() {
-        const { name, scope, batchRuns, value, noneLabel = null } = this.props;
+        const { name, scopeRegion, scopeDistrict, batchRuns, value, withNull = false, nullLabel = null } = this.props;
         let options = [
             ...batchRuns.map(v => ({
                 value: v,
                 label: this.formatSuggestion(v)
             }))]
-        if (!!noneLabel) {
+        if (withNull) {
             options.unshift({
                 value: null,
-                label: noneLabel
+                label: nullLabel || formatMessage(this.props.intl, "claim_batch", "BatchRunPicker.null")
             })
         }
         return (
             <SelectInput
-                disabled={!scope}
-                module="claim_batch" label="BatchRun"
+                module="claim_batch"
+                strLabel={formatMessageWithValues(this.props.intl, "claim_batch", "BatchRun", { location: this.locationStr() })}
                 options={options}
                 name={name}
                 value={value}

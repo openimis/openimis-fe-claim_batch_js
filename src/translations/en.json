@@ -1,8 +1,9 @@
 {
     "claim_batch.menu.claim_batch": "Batch Runs",
-    "claim_batch.BatchRun": "Batch Run",
+    "claim_batch.claimBatch.page.title": "Batch Runs",
+    "claim_batch.BatchRun": "Batch Run ({location})",
     "claim_batch.BatchRunLauncher.title": "Launch Batch Run",
-    "claim_batch.BatchRunSearcher.title": "Batch Runs ({totalCount})",
+    "claim_batch.BatchRunSearcher.title": "Relative Indexes ({totalCount})",
     "claim_batch.AccountPreviewer.title": "Accounts",
     "claim_batch.batchRunSummaries.year": "Year",
     "claim_batch.batchRunSummaries.month": "Month",
@@ -24,5 +25,6 @@
     "claim_batch.processBatch.confirm.title": "Launch Batch Processing",
     "claim_batch.processBatch.confirm.message": "Are you sure you want to process batches for {location}, {month} {year}?",
     "claim_batch.processBatch.mutationLabel": "Batch Process - {location}, {month} {year}",
-    "claim_batch.regions.country":"National"
+    "claim_batch.regions.country":"National",
+    "claim_batch.BatchRunPicker.null":"Any"
 }
