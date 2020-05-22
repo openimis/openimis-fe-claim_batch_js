@@ -9,7 +9,7 @@ import PreviewIcon from "@material-ui/icons/ListAlt";
 import { FormattedMessage, PublishedComponent, ConstantBasedPicker, formatMessage } from "@openimis/fe-core";
 import { preview, generateReport } from "../actions"
 
-import { ACCOUNT_GROUP_BY, NATIONAL_ID } from "../constants";
+import { ACCOUNT_GROUP_BY } from "../constants";
 
 const styles = theme => ({
     paper: {
@@ -18,7 +18,7 @@ const styles = theme => ({
     paperHeader: theme.paper.header,
     paperHeaderTitle: theme.paper.title,
     paperHeaderAction: theme.paper.action,
-    paperDivider: theme.paper.divider, form: {
+    form: {
         padding: 0
     },
     item: {
@@ -51,12 +51,12 @@ class AccountPreviewer extends Component {
 
     componentDidMount() {
         if (!!this.props.userHealthFacilityFullPath) {
-            this.setState({
-                region: this.props.userHealthFacilityFullPath.location.parent,
-                district: this.props.userHealthFacilityFullPath.location,
-                healthFacility: this.props.userHealthFacilityFullPath,
+            this.setState((state, props) => ({
+                region: props.userHealthFacilityFullPath.location.parent,
+                district: props.userHealthFacilityFullPath.location,
+                healthFacility: props.userHealthFacilityFullPath,
                 batchRun: null,
-            });
+            }));
         }
     }
 
@@ -65,12 +65,12 @@ class AccountPreviewer extends Component {
             this.props.generateReport({ ...this.state })
         } else if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath)) {
             if (!!this.props.userHealthFacilityFullPath) {
-                this.setState({
-                    region: this.props.userHealthFacilityFullPath.location.parent,
-                    district: this.props.userHealthFacilityFullPath.location,
-                    healthFacility: this.props.userHealthFacilityFullPath,
+                this.setState((state, props) =>({
+                    region: props.userHealthFacilityFullPath.location.parent,
+                    district: props.userHealthFacilityFullPath.location,
+                    healthFacility: props.userHealthFacilityFullPath,
                     batchRun: null,
-                });
+                }));
             }
         }
     }
@@ -87,21 +87,21 @@ class AccountPreviewer extends Component {
     }
 
     _onChangeDistrict = (v, s) => {
-        this.setState({
-            region: v !== null ? v.parent : this.state.region,
+        this.setState((state) => ({
+            region: v !== null ? v.parent : state.region,
             district: v,
             healthFacility: null,
             batchRun: null,
-        });
+        }));
     }
 
     _onChangeHealthFacility = (v, s) => {
-        this.setState({
-            region: v !== null ? v.location.parent : this.state.region,
-            district: v !== null ? v.location : this.state.district,
+        this.setState((state) => ({
+            region: v !== null ? v.location.parent : state.region,
+            district: v !== null ? v.location : state.district,
             healthFacility: v,
             batchRun: null,
-        });
+        }));
     }
 
     render() {
@@ -134,7 +134,7 @@ class AccountPreviewer extends Component {
                         />
                     </Grid>
                     <Grid item xs={2} className={classes.item}>
-                        <PublishedComponent id="core.DatePicker"
+                        <PublishedComponent pubId="core.DatePicker"
                             module="claim_batch"
                             label="previewer.dateFrom"
                             value={this.state.dateFrom}
@@ -142,7 +142,7 @@ class AccountPreviewer extends Component {
                         />
                     </Grid>
                     <Grid item xs={2} className={classes.item}>
-                        <PublishedComponent id="core.DatePicker"
+                        <PublishedComponent pubId="core.DatePicker"
                             module="claim_batch"
                             label="previewer.dateTo"
                             value={this.state.dateTo}
@@ -167,7 +167,7 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="location.RegionPicker"
+                            pubId="location.RegionPicker"
                             value={this.state.region}
                             onChange={this._onChangeRegion}
                             withNull={true}
@@ -176,7 +176,7 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="location.DistrictPicker"
+                            pubId="location.DistrictPicker"
                             region={this.state.region}
                             value={this.state.district}
                             onChange={this._onChangeDistrict}
@@ -185,7 +185,7 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="location.HealthFacilityPicker"
+                            pubId="location.HealthFacilityPicker"
                             region={this.state.region}
                             district={this.state.district}
                             value={this.state.healthFacility}
@@ -194,21 +194,21 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="location.HealthFacilityLevelPicker"
+                            pubId="location.HealthFacilityLevelPicker"
                             value={this.state.healthFacilityLevel}
                             onChange={(v, s) => this._onChange('healthFacilityLevel', v)}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="product.ProductPicker"
+                            pubId="product.ProductPicker"
                             value={this.state.product}
                             onChange={(v, s) => this._onChange('product', v)}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="claim_batch.BatchRunPicker"
+                            pubId="claim_batch.BatchRunPicker"
                             scopeRegion={this.state.region}
                             scopeDistrict={this.state.district}
                             value={this.state.batchRun}

@@ -17,7 +17,7 @@ const styles = theme => ({
     paperHeader: theme.paper.header,
     paperHeaderTitle: theme.paper.title,
     paperHeaderAction: theme.paper.action,
-    paperDivider: theme.paper.divider, form: {
+    form: {
         padding: 0
     },
     item: {
@@ -169,24 +169,24 @@ class BatchRunSearcher extends Component {
 
     onChangePage = (page, nbr) => {
         if (nbr > this.state.page) {
-            this.setState(
-                {
-                    page: this.state.page + 1,
+            this.setState((state, props) => 
+                ({
+                    page: state.page + 1,
                     beforeCursor: null,
-                    afterCursor: this.props.batchRunSearcherPageInfo.endCursor,
-                },
+                    afterCursor: props.batchRunSearcherPageInfo.endCursor,
+                }),
                 e => this.props.fetchBatchRunSummaries(
                     this.props.modulesManager,
                     this.filtersToQueryParams()
                 )
             )
         } else if (nbr < this.state.page) {
-            this.setState(
-                {
-                    page: this.state.page - 1,
-                    beforeCursor: this.props.batchRunSearcherPageInfo.startCursor,
+            this.setState((state, props) =>
+                ({
+                    page: state.page - 1,
+                    beforeCursor: props.batchRunSearcherPageInfo.startCursor,
                     afterCursor: null,
-                },
+                }),
                 e => this.props.fetchBatchRunSummaries(
                     this.props.modulesManager,
                     this.filtersToQueryParams()
@@ -241,20 +241,20 @@ class BatchRunSearcher extends Component {
                                 itemFormatters={[
                                     b => b.runYear,
                                     b => <PublishedComponent
-                                        id="core.MonthPicker"
+                                        pubId="core.MonthPicker"
                                         readOnly={true}
                                         withLabel={false}
                                         value={b.runMonth}
                                     />,
                                     b => b.productLabel,
                                     b => <PublishedComponent
-                                        id="medical.CareTypePicker"
+                                        pubId="medical.CareTypePicker"
                                         readOnly={true}
                                         withLabel={false}
                                         value={b.careType}
                                     />,
                                     b => <PublishedComponent
-                                        id="core.DatePicker"
+                                        pubId="core.DatePicker"
                                         readOnly={true}
                                         withLabel={false}
                                         value={b.calcDate}
