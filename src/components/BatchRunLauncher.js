@@ -130,7 +130,7 @@ class BatchRunLauncher extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="location.RegionPicker"
+                            pubRef="location.RegionPicker"
                             value={this.state.region}
                             withNull={true}
                             nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
@@ -139,7 +139,7 @@ class BatchRunLauncher extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="location.DistrictPicker"
+                            pubRef="location.DistrictPicker"
                             region={this.state.region}
                             value={this.state.district}
                             withNull={true}
@@ -148,7 +148,7 @@ class BatchRunLauncher extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="core.YearPicker"
+                            pubRef="core.YearPicker"
                             module="claim_batch"
                             label="year"
                             min={min}
@@ -159,7 +159,7 @@ class BatchRunLauncher extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="core.MonthPicker"
+                            pubRef="core.MonthPicker"
                             module="claim_batch"
                             label="month"
                             value={this.state.month}

@@ -241,20 +241,20 @@ class BatchRunSearcher extends Component {
                                 itemFormatters={[
                                     b => b.runYear,
                                     b => <PublishedComponent
-                                        pubId="core.MonthPicker"
+                                        pubRef="core.MonthPicker"
                                         readOnly={true}
                                         withLabel={false}
                                         value={b.runMonth}
                                     />,
                                     b => b.productLabel,
                                     b => <PublishedComponent
-                                        pubId="medical.CareTypePicker"
+                                        pubRef="medical.CareTypePicker"
                                         readOnly={true}
                                         withLabel={false}
                                         value={b.careType}
                                     />,
                                     b => <PublishedComponent
-                                        pubId="core.DatePicker"
+                                        pubRef="core.DatePicker"
                                         readOnly={true}
                                         withLabel={false}
                                         value={b.calcDate}

@@ -134,7 +134,7 @@ class AccountPreviewer extends Component {
                         />
                     </Grid>
                     <Grid item xs={2} className={classes.item}>
-                        <PublishedComponent pubId="core.DatePicker"
+                        <PublishedComponent pubRef="core.DatePicker"
                             module="claim_batch"
                             label="previewer.dateFrom"
                             value={this.state.dateFrom}
@@ -142,7 +142,7 @@ class AccountPreviewer extends Component {
                         />
                     </Grid>
                     <Grid item xs={2} className={classes.item}>
-                        <PublishedComponent pubId="core.DatePicker"
+                        <PublishedComponent pubRef="core.DatePicker"
                             module="claim_batch"
                             label="previewer.dateTo"
                             value={this.state.dateTo}
@@ -167,7 +167,7 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="location.RegionPicker"
+                            pubRef="location.RegionPicker"
                             value={this.state.region}
                             onChange={this._onChangeRegion}
                             withNull={true}
@@ -176,7 +176,7 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="location.DistrictPicker"
+                            pubRef="location.DistrictPicker"
                             region={this.state.region}
                             value={this.state.district}
                             onChange={this._onChangeDistrict}
@@ -185,7 +185,7 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="location.HealthFacilityPicker"
+                            pubRef="location.HealthFacilityPicker"
                             region={this.state.region}
                             district={this.state.district}
                             value={this.state.healthFacility}
@@ -194,21 +194,21 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="location.HealthFacilityLevelPicker"
+                            pubRef="location.HealthFacilityLevelPicker"
                             value={this.state.healthFacilityLevel}
                             onChange={(v, s) => this._onChange('healthFacilityLevel', v)}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="product.ProductPicker"
+                            pubRef="product.ProductPicker"
                             value={this.state.product}
                             onChange={(v, s) => this._onChange('product', v)}
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            pubId="claim_batch.BatchRunPicker"
+                            pubRef="claim_batch.BatchRunPicker"
                             scopeRegion={this.state.region}
                             scopeDistrict={this.state.district}
                             value={this.state.batchRun}
