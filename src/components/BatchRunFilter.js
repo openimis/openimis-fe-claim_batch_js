@@ -19,10 +19,6 @@ const styles = theme => ({
 
 class BatchRunFilter extends Component {
 
-    state = {
-        reset: 0
-    }
-
     _filterValue = k => {
         const { filters } = this.props;
         return !!filters[k] ? filters[k].value : null
@@ -36,7 +32,7 @@ class BatchRunFilter extends Component {
             <Grid container className={classes.form}>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
-                        id="claim_batch.AccountTypePicker"
+                        pubRef="claim_batch.AccountTypePicker"
                         name="accountType"
                         value={(filters['accountType'] && filters['accountType']['value'])}
                         onChange={(v, s) => onChangeFilters([{
@@ -48,7 +44,7 @@ class BatchRunFilter extends Component {
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
-                        id="core.YearPicker"
+                        pubRef="core.YearPicker"
                         module="claim_batch"
                         label="year"
                         nullLabel="year.null"
@@ -64,7 +60,7 @@ class BatchRunFilter extends Component {
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
-                        id="core.MonthPicker"
+                        pubRef="core.MonthPicker"
                         module="claim_batch"
                         label="month"
                         nullLabel="month.null"
@@ -79,7 +75,7 @@ class BatchRunFilter extends Component {
                 <Grid item xs={3} />
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
-                        id="location.RegionPicker"
+                        pubRef="location.RegionPicker"
                         value={(!!filters['accountRegion'] ? filters['accountRegion']['value'] : null)}
                         withNull={true}
                         nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
@@ -88,7 +84,7 @@ class BatchRunFilter extends Component {
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
-                        id="location.DistrictPicker"
+                        pubRef="location.DistrictPicker"
                         value={(filters['accountDistrict'] && filters['accountDistrict']['value'])}
                         region={filters['accountRegion'] && filters['accountRegion']['value']}
                         withNull={true}
@@ -97,7 +93,7 @@ class BatchRunFilter extends Component {
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
-                        id="product.ProductPicker"
+                        pubRef="product.ProductPicker"
                         value={(filters['accountProduct'] && filters['accountProduct']['value'])}
                         onChange={(v, s) => onChangeFilters([{
                             id: 'accountProduct',
@@ -108,7 +104,7 @@ class BatchRunFilter extends Component {
                 </Grid>
                 <Grid item xs={3} className={classes.item}>
                     <PublishedComponent
-                        id="medical.CareTypePicker"
+                        pubRef="medical.CareTypePicker"
                         value={(filters['accountCareType'] && filters['accountCareType']['value'])}
                         onChange={(v, s) => onChangeFilters([{
                             id: 'accountCareType',

@@ -33,7 +33,7 @@ class BatchRunPicker extends Component {
     }
 
     render() {
-        const { name, scopeRegion, scopeDistrict, batchRuns, value, withNull = false, nullLabel = null } = this.props;
+        const { name, batchRuns, value, withNull = false, nullLabel = null } = this.props;
         let options = [
             ...batchRuns.map(v => ({
                 value: v,

@@ -19,7 +19,7 @@ const styles = theme => ({
     paperHeader: theme.paper.header,
     paperHeaderTitle: theme.paper.title,
     paperHeaderAction: theme.paper.action,
-    paperDivider: theme.paper.divider, form: {
+    form: {
         padding: 0
     },
     item: {
@@ -53,11 +53,11 @@ class BatchRunLauncher extends Component {
 
     componentDidMount() {
         if (!!this.props.userHealthFacilityFullPath) {
-            this.setState({
-                region: this.props.userHealthFacilityFullPath.location.parent,
-                district: this.props.userHealthFacilityFullPath.location,
-                locationStr: this.props.userHealthFacilityLocationStr,
-            })
+            this.setState((state, props) => ({
+                region: props.userHealthFacilityFullPath.location.parent,
+                district: props.userHealthFacilityFullPath.location,
+                locationStr: props.userHealthFacilityLocationStr,
+            }))
         }
     }
 
@@ -65,11 +65,11 @@ class BatchRunLauncher extends Component {
         if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath) &&
             !!this.props.userHealthFacilityFullPath
         ) {
-            this.setState({
-                region: this.props.userHealthFacilityFullPath.location.parent,
-                district: this.props.userHealthFacilityFullPath.location,
-                locationStr: this.props.userHealthFacilityLocationStr,
-            })
+            this.setState((state, props) => ({
+                region: props.userHealthFacilityFullPath.location.parent,
+                district: props.userHealthFacilityFullPath.location,
+                locationStr: props.userHealthFacilityLocationStr,
+            }))
         }
         if (prevProps.confirmed !== this.props.confirmed && !!this.props.confirmed) {
             this.props.processBatch(
@@ -130,7 +130,7 @@ class BatchRunLauncher extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="location.RegionPicker"
+                            pubRef="location.RegionPicker"
                             value={this.state.region}
                             withNull={true}
                             nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
@@ -139,7 +139,7 @@ class BatchRunLauncher extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="location.DistrictPicker"
+                            pubRef="location.DistrictPicker"
                             region={this.state.region}
                             value={this.state.district}
                             withNull={true}
@@ -148,7 +148,7 @@ class BatchRunLauncher extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="core.YearPicker"
+                            pubRef="core.YearPicker"
                             module="claim_batch"
                             label="year"
                             min={min}
@@ -159,7 +159,7 @@ class BatchRunLauncher extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
-                            id="core.MonthPicker"
+                            pubRef="core.MonthPicker"
                             module="claim_batch"
                             label="month"
                             value={this.state.month}
