@@ -4,6 +4,8 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash-uuid";
 
+export const BATCH_RUN_PICKER_PROJECTION = ["id", "runDate"];
+
 export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict) {
   var filters = ['orderBy: "-runDate"']
   var payload = null;
