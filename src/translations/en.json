@@ -27,7 +27,7 @@
     "claim_batch.processBatch.mutationLabel": "Batch Process - {location}, {month} {year}",
     "claim_batch.regions.country":"National",
     "claim_batch.BatchRunPicker.null":"Any",
-    "claim_batch.BatchRunReadOnlyPicker": "Batch Run",
-    "claim_batch.BatchRunReadOnlyPicker.null": "Any",
-    "claim_batch.BatchRunReadOnlyPicker.emptyLabel": " "
+    "claim_batch.BatchRunWithLocationPicker": "Batch Run",
+    "claim_batch.BatchRunWithLocationPicker.null": "Any",
+    "claim_batch.BatchRunWithLocationPicker.emptyLabel": " "
 }
