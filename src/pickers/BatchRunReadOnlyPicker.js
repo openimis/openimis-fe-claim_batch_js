@@ -68,7 +68,7 @@ class BatchRunReadOnlyPicker extends Component {
 
     return (
       <AutoSuggestion
-        module="claim_barch"
+        module="claim_batch"
         items={batchRuns}
         label={!!withLabel && (label || formatMessage(intl, "claim_batch", "BatchRunReadOnlyPicker"))}
         lookup={batchRunLabel}
