@@ -9,6 +9,12 @@ function reducer(
         fetchedBatchRunPicker: false,
         errorBatchRunPicker: null,
         batchRunPicker: [],
+        fetchingBatchRunReadOnlyPicker: false,
+        fetchedBatchRunReadOnlyPicker: false,
+        batchRunReadOnlyPickerTotalCount: 0,
+        batchRunReadOnlyPickerPageInfo: {},
+        errorBatchRunReadOnlyPicker: null,
+        batchRunReadOnlyPicker: [],
         fetchingBatchRunSearcher: false,
         fetchedBatchRunSearcher: false,
         batchRunSearcher: [],
@@ -66,6 +72,33 @@ function reducer(
                 ...state,
                 fetchingBatchRunSearcher: false,
                 errorBatchRunSearcher: formatServerError(action.payload)
+            };
+        
+        case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_READ_ONLY_REQ':
+            return {
+                ...state,
+                fetchingBatchRunReadOnlyPicker: true,
+                fetchedBatchRunReadOnlyPicker: false,
+                batchRunReadOnlyPicker: [],
+                batchRunReadOnlyPickerPageInfo: {},
+                batchRunReadOnlyPickerTotalCount: 0,
+                errorBatchRunReadOnlyPicker: null,
+            };
+        case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_READ_ONLY_RESP':
+            return {
+                ...state,
+                fetchingBatchRunReadOnlyPicker: false,
+                fetchedBatchRunReadOnlyPicker: true,
+                batchRunReadOnlyPicker: parseData(action.payload.data.batchRuns),
+                batchRunReadOnlyPickerPageInfo: pageInfo(action.payload.data.batchRuns),
+                batchRunReadOnlyPickerTotalCount: !!action.payload.data.batchRuns ? action.payload.data.batchRuns.totalCount : null,
+                errorBatchRunReadOnlyPicker: formatGraphQLError(action.payload)
+            };
+        case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_READ_ONLY_ERR':
+            return {
+                ...state,
+                fetchingBatchRunReadOnlyPicker: false,
+                errorBatchRunReadOnlyPicker: formatServerError(action.payload)
             };
         case 'CLAIM_BATCH_MUTATION_REQ':
             return dispatchMutationReq(state, action)

@@ -5,9 +5,10 @@ import messages_en from "./translations/en.json";
 import reducer from "./reducer";
 import ClaimBatchPage from "./pages/ClaimBatchPage";
 import BatchRunPicker from "./pickers/BatchRunPicker";
+import BatchRunReadOnlyPicker from "./pickers/BatchRunReadOnlyPicker";
 import AccountTypePicker from "./pickers/AccountTypePicker";
 import { RIGHT_PROCESS, RIGHT_PREVIEW } from "./constants";
-import { BATCH_RUN_PICKER_PROJECTION } from "./actions";
+import { BATCH_RUN_PICKER_PROJECTION, BATCH_RUN_READ_ONLY_PICKER_PROJECTION } from "./actions";
 
 const ROUTE_CLAIM_BATCH = "claim_batch";
 
@@ -18,6 +19,8 @@ const DEFAULT_CONFIG = {
     { key: "claim_batch.route.claim_batch", ref: ROUTE_CLAIM_BATCH },
     { key: "claim_batch.BatchRunPicker", ref: BatchRunPicker },
     { key: "claim_batch.BatchRunPicker.projection", ref: BATCH_RUN_PICKER_PROJECTION },
+    { key: "claim_batch.BatchRunReadOnlyPicker", ref: BatchRunReadOnlyPicker },
+    { key: "claim_batch.BatchRunReadOnlyPicker.projection", ref: BATCH_RUN_READ_ONLY_PICKER_PROJECTION },
     { key: "claim_batch.AccountTypePicker", ref: AccountTypePicker },
     { key: "claim_batch.AccountTypePicker.projection", ref: null },
   ],
@@ -35,8 +38,8 @@ const DEFAULT_CONFIG = {
   "invoice.SubjectAndThirdpartyPicker": [
     {
       type: "batch run",
-      picker: BatchRunPicker,
-      pickerProjection: BATCH_RUN_PICKER_PROJECTION,
+      picker: BatchRunReadOnlyPicker,
+      pickerProjection: BATCH_RUN_READ_ONLY_PICKER_PROJECTION,
     },
   ],
 }
