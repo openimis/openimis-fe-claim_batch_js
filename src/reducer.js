@@ -9,6 +9,11 @@ function reducer(
         fetchedBatchRunPicker: false,
         errorBatchRunPicker: null,
         batchRunPicker: [],
+        fetchingBatchRunWithLocationPicker: false,
+        fetchedBatchRunWithLocationPicker: false,
+        batchRunWithLocationPickerPageInfo: {},
+        errorBatchRunWithLocationPicker: null,
+        batchRunWithLocationPicker: [],
         fetchingBatchRunSearcher: false,
         fetchedBatchRunSearcher: false,
         batchRunSearcher: [],
@@ -66,6 +71,31 @@ function reducer(
                 ...state,
                 fetchingBatchRunSearcher: false,
                 errorBatchRunSearcher: formatServerError(action.payload)
+            };
+        
+        case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_WITH_LOCATION_REQ':
+            return {
+                ...state,
+                fetchingBatchRunWithLocationPicker: true,
+                fetchedBatchRunWithLocationPicker: false,
+                batchRunWithLocationPicker: [],
+                batchRunWithLocationPickerPageInfo: {},
+                errorBatchRunWithLocationPicker: null,
+            };
+        case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_WITH_LOCATION_RESP':
+            return {
+                ...state,
+                fetchingBatchRunWithLocationPicker: false,
+                fetchedBatchRunWithLocationPicker: true,
+                batchRunWithLocationPicker: parseData(action.payload.data.batchRuns),
+                batchRunWithLocationPickerPageInfo: pageInfo(action.payload.data.batchRuns),
+                errorBatchRunWithLocationPicker: formatGraphQLError(action.payload)
+            };
+        case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_WITH_LOCATION_ERR':
+            return {
+                ...state,
+                fetchingBatchRunWithLocationPicker: false,
+                errorBatchRunWithLocationPicker: formatServerError(action.payload)
             };
         case 'CLAIM_BATCH_MUTATION_REQ':
             return dispatchMutationReq(state, action)
