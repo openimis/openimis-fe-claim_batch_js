@@ -4,6 +4,16 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash-uuid";
 
+export const BATCH_RUN_PICKER_PROJECTION = ["id", "runDate"];
+
+export const BATCH_RUN_WITH_LOCATION_PICKER_PROJECTION = [
+  "id",
+  "runDate",
+  "runMonth",
+  "runYear",
+  "location{code name}", 
+];
+
 export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict) {
   var filters = ['orderBy: "-runDate"']
   var payload = null;
@@ -28,6 +38,11 @@ export function fetchBatchRunSummaries(mm, filters) {
       "careType", "calcDate", "index"]
   );
   return graphql(payload, 'CLAIM_BATCH_CLAIM_BATCH_SEARCHER');
+}
+
+export function fetchBatchRunWithLocationPicker(params) {
+  const payload = formatPageQueryWithCount("batchRuns", params, BATCH_RUN_WITH_LOCATION_PICKER_PROJECTION);
+  return graphql(payload, 'CLAIM_BATCH_CLAIM_BATCH_PICKER_WITH_LOCATION')
 }
 
 export function processBatch(location, year, month, clientMutationLabel, clientMutationDetails = null) {
