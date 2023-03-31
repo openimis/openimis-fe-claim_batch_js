@@ -72,7 +72,7 @@ function reducer(
                 fetchingBatchRunSearcher: false,
                 errorBatchRunSearcher: formatServerError(action.payload)
             };
-        
+
         case 'CLAIM_BATCH_CLAIM_BATCH_PICKER_WITH_LOCATION_REQ':
             return {
                 ...state,
@@ -112,8 +112,13 @@ function reducer(
             return {
                 ...state,
                 generating: false
-            };            
-        default:
+            };
+        case 'CLAIM_BATCH_PREVIEW_ERROR':
+          return {
+            ...state,
+            generating: false
+          };
+      default:
             return state;
     }
 }

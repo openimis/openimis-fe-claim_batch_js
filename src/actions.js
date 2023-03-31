@@ -1,6 +1,6 @@
 import {
   graphql, formatPageQuery, formatPageQueryWithCount, formatMutation, decodeId,
-  baseApiUrl, openBlob, toISODate
+  baseApiUrl, openBlob, toISODate, coreAlert, formatMessage,
 } from "@openimis/fe-core";
 import _ from "lodash-uuid";
 
@@ -11,7 +11,7 @@ export const BATCH_RUN_WITH_LOCATION_PICKER_PROJECTION = [
   "runDate",
   "runMonth",
   "runYear",
-  "location{code name}", 
+  "location{code name}",
 ];
 
 export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict) {
@@ -77,7 +77,7 @@ function prmsLocationId(prms) {
   return 0
 }
 
-export function generateReport(prms) {
+export function generateReport(prms, intl) {
   var qParams = {
     locationId: prmsLocationId(prms),
     regionCode: !prms.region ? '' : prms.region.code,
@@ -100,8 +100,18 @@ export function generateReport(prms) {
   url.search = new URLSearchParams(qParams);
   return (dispatch) => {
     return fetch(url)
-      .then(response => response.blob())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to generate report: ${response.status} ${response.statusText}`);
+        }
+        return response.blob();
+      })
       .then(blob => openBlob(blob, `${_.uuid()}.pdf`, "pdf"))
       .then(e => dispatch({ type: 'CLAIM_BATCH_PREVIEW_DONE', payload: prms }))
+      .catch(error => {
+        dispatch({ type: 'CLAIM_BATCH_PREVIEW_ERROR', payload: error });
+        dispatch(coreAlert(formatMessage(intl, "claim_batch", "BatchRun.errorHeader"),
+                            formatMessage(intl, "claim_batch", "BatchRun.errorDetail")));
+      });
   }
 }
