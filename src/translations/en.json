@@ -29,5 +29,7 @@
     "claim_batch.BatchRunPicker.null":"Any",
     "claim_batch.BatchRunWithLocationPicker": "Batch Run",
     "claim_batch.BatchRunWithLocationPicker.null": "Any",
-    "claim_batch.BatchRunWithLocationPicker.emptyLabel": " "
+    "claim_batch.BatchRunWithLocationPicker.emptyLabel": " ",
+    "claim_batch.BatchRun.errorHeader": "Pdf creation has failed",
+    "claim_batch.BatchRun.errorDetail": "No data in selected batch run"
 }
