@@ -104,7 +104,7 @@ class BatchRunSearcher extends Component {
 
     onChangeDistrict = (v, s) => {
         this.onChangeFilters([
-            this._regionFilter(!!v ? v.parent : this._filterValue('accountRegion')),
+            this._regionFilter(!!v ? v.parent : this.state.filters.accountRegion.value),
             this._districtFilter(v)
         ]);
     }
