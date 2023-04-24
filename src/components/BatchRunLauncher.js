@@ -153,7 +153,9 @@ class BatchRunLauncher extends Component {
                             label="year"
                             min={min}
                             max={max}
+                            withNull={false}
                             value={this.state.year}
+                            required={true}
                             onChange={e => this.setState({ year: e })}
                         />
                     </Grid>
@@ -163,6 +165,8 @@ class BatchRunLauncher extends Component {
                             module="claim_batch"
                             label="month"
                             value={this.state.month}
+                            withNull={false}
+                            required={true}
                             onChange={(v, s) => this.setState({ month: v, monthStr: s })}
                         />
                     </Grid>
