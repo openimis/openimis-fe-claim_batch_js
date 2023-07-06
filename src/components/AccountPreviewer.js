@@ -62,7 +62,7 @@ class AccountPreviewer extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (!prevProps.generating && !!this.props.generating) {
-            this.props.generateReport({ ...this.state })
+            this.props.generateReport({ ...this.state }, this.props.intl)
         } else if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath)) {
             if (!!this.props.userHealthFacilityFullPath) {
                 this.setState((state, props) =>({

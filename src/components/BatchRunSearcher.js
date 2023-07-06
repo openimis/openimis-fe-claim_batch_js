@@ -104,7 +104,7 @@ class BatchRunSearcher extends Component {
 
     onChangeDistrict = (v, s) => {
         this.onChangeFilters([
-            this._regionFilter(!!v ? v.parent : this._filterValue('accountRegion')),
+            this._regionFilter(!!v ? v.parent : this.state.filters.accountRegion.value),
             this._districtFilter(v)
         ]);
     }
@@ -112,12 +112,16 @@ class BatchRunSearcher extends Component {
 
     filtersToQueryParams = () => {
         let prms = Object.keys(this.state.filters).map(f => this.state.filters[f]['filter']);
-        prms = prms.concat(`first: ${this.state.pageSize}`);
+        if (!this.state.beforeCursor && !this.state.afterCursor) {
+            prms.push(`first: ${this.state.pageSize}`);
+        }
         if (!!this.state.afterCursor) {
-            prms.push(`after: "${this.state.afterCursor}"`)
+            prms.push(`after: "${this.state.afterCursor}"`);
+            prms.push(`first: ${this.state.pageSize}`);
         }
         if (!!this.state.beforeCursor) {
-            prms.push(`before: "${this.state.beforeCursor}"`)
+            prms.push(`before: "${this.state.beforeCursor}"`);
+            prms.push(`last: ${this.state.pageSize}`);
         }
         return prms;
     }
