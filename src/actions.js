@@ -95,6 +95,7 @@ export function generateReport(prms, intl) {
     dateTo: !prms.dateTo ? '' : toISODate(prms.dateTo),
     group: prms.group,
     showClaims: prms.showClaims,
+    fileFormat: prms.fileFormat,
   }
   var url = new URL(`${window.location.origin}${baseApiUrl}/claim_batch/report/`);
   url.search = new URLSearchParams(qParams);
@@ -106,7 +107,7 @@ export function generateReport(prms, intl) {
         }
         return response.blob();
       })
-      .then(blob => openBlob(blob, `${_.uuid()}.pdf`, "pdf"))
+      .then(blob => openBlob(blob, `${_.uuid()}.${prms.fileFormat}`, prms.fileFormat))
       .then(e => dispatch({ type: 'CLAIM_BATCH_PREVIEW_DONE', payload: prms }))
       .catch(error => {
         dispatch({ type: 'CLAIM_BATCH_PREVIEW_ERROR', payload: error });

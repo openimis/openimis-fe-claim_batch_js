@@ -10,6 +10,7 @@ import { FormattedMessage, PublishedComponent, ConstantBasedPicker, formatMessag
 import { preview, generateReport } from "../actions"
 
 import { ACCOUNT_GROUP_BY } from "../constants";
+import AccountFileFormatPicker from "../pickers/AccountFileFormatPicker";
 
 const styles = theme => ({
     paper: {
@@ -138,6 +139,7 @@ class AccountPreviewer extends Component {
                             module="claim_batch"
                             label="previewer.dateFrom"
                             value={this.state.dateFrom}
+                            required
                             onChange={(v, s) => this._onChange('dateFrom', v)}
                         />
                     </Grid>
@@ -146,6 +148,7 @@ class AccountPreviewer extends Component {
                             module="claim_batch"
                             label="previewer.dateTo"
                             value={this.state.dateTo}
+                            required
                             onChange={(v, s) => this._onChange('dateTo', v)}
                         />
                     </Grid>
@@ -159,6 +162,16 @@ class AccountPreviewer extends Component {
                                 />
                             }
                             label={formatMessage(intl, "claim_batch", "previewer.showClaims")}
+                        />
+                    </Grid>
+                    <Grid item xs={2} className={classes.item}>
+                        <AccountFileFormatPicker
+                            module="claim_batch"
+                            label="previewer.fileFormat"
+                            value={this.state.fileFormat}
+                            required
+                            withNull={false}
+                            onChange={(v, s) => this._onChange('fileFormat', v)}
                         />
                     </Grid>
                     <Grid item xs={6} className={classes.item}></Grid>
