@@ -25,6 +25,7 @@
     "claim_batch.previewer.fileFormat": "File Format",
     "claim_batch.previewer.fileFormat.pdf": "PDF",
     "claim_batch.previewer.fileFormat.xlsx": "XLSX",
+    "claim_batch.previewer.missingFieldsError": "Error - please fill out all mandatory fields",
     "claim_batch.processBatch.confirm.title": "Launch Batch Processing",
     "claim_batch.processBatch.confirm.message": "Are you sure you want to process batches for {location}, {month} {year}?",
     "claim_batch.processBatch.mutationLabel": "Batch Process - {location}, {month} {year}",

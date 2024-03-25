@@ -105,6 +105,21 @@ class AccountPreviewer extends Component {
         }));
     }
 
+    _canPreview() {
+      if (!this.state.dateFrom) return false;
+      if (!this.state.dateTo) return false;
+      if (!this.state.fileFormat) return false;
+      return true;
+    }
+
+    handleClickOnPreviewButton = () => {
+      if (this._canPreview()) {
+        this.props.preview();
+      } else {
+        alert(formatMessage(this.props.intl, 'claim_batch', 'previewer.missingFieldsError'));
+      }
+    }
+
     render() {
         const { intl, classes, generating } = this.props;
         return (
@@ -117,7 +132,7 @@ class AccountPreviewer extends Component {
                         <Grid container justify="flex-end">
                             <Grid item className={classes.paperHeaderAction}>
                                 {!generating &&
-                                    <IconButton onClick={e => this.props.preview()}>
+                                    <IconButton onClick={e => this.handleClickOnPreviewButton()}>
                                         <PreviewIcon />
                                     </IconButton>
                                 }
