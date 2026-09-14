@@ -18,11 +18,11 @@ export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict) {
   var filters = ['orderBy: "-runDate"']
   var payload = null;
   if (!!scopeDistrict) {
-    filters.push([`location_Uuid: "${scopeDistrict.uuid}"`])
+    filters.push([`scope_Uuid: "${scopeDistrict.uuid}"`])
   } else if (!!scopeRegion) {
-    filters.push(`location_Uuid: "${scopeRegion.uuid}"`)
+    filters.push(`scope_Uuid: "${scopeRegion.uuid}"`)
   } else { //!!scopeNational
-    filters.push(`location_Isnull: true`)
+    filters.push(`scope_Isnull: true`)
   }
   payload = formatPageQuery("batchRuns",
     filters,
