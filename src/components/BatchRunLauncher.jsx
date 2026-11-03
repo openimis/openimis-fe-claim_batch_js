@@ -38,14 +38,23 @@ class BatchRunLauncher extends Component {
     }
 
     launchBatchRun = e => {
+        const values = {
+            location: this.state.locationStr || formatMessage(this.props.intl, "claim_batch", "claim_batch.regions.country"),
+            year: this.state.year,
+            month: this.state.monthStr,
+        };
+        // state.core.confirmed launched a batch run on any other dialog's "Yes" (OP-3228).
         this.props.coreConfirm(
             formatMessage(this.props.intl, "claim_batch", "processBatch.confirm.title"),
-            formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.confirm.message",
-                {
-                    location: this.state.locationStr || formatMessage(this.props.intl, "claim_batch", "claim_batch.regions.country"),
-                    year: this.state.year,
-                    month: this.state.monthStr,
-                }),
+            formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.confirm.message", values),
+            {
+                onConfirm: () => this.props.processBatch(
+                    this.state.district || this.state.region,
+                    this.state.year,
+                    this.state.month,
+                    formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.mutationLabel", values),
+                ),
+            },
         );
     }
 
@@ -69,19 +78,7 @@ class BatchRunLauncher extends Component {
                 locationStr: props.userHealthFacilityLocationStr,
             }))
         }
-        if (prevProps.confirmed !== this.props.confirmed && !!this.props.confirmed) {
-            this.props.processBatch(
-                this.state.district || this.state.region,
-                this.state.year,
-                this.state.month,
-                formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.mutationLabel",
-                    {
-                        location: this.state.locationStr || formatMessage(this.props.intl, "claim_batch", "claim_batch.regions.country"),
-                        year: this.state.year,
-                        month: this.state.monthStr,
-                    })
-            );
-        } else if (prevProps.submittingMutation && !this.props.submittingMutation) {
+        if (prevProps.submittingMutation && !this.props.submittingMutation) {
             this.props.journalize(this.props.mutation);
         }
     }
@@ -177,7 +174,6 @@ class BatchRunLauncher extends Component {
 const mapStateToProps = state => ({
     userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
     userHealthFacilityLocationStr: !!state.loc ? state.loc.userHealthFacilityLocationStr : null,
-    confirmed: state.core.confirmed,
     submittingMutation: state.claim_batch.submittingMutation,
     mutation: state.claim_batch.mutation,
 });
