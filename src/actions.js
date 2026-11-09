@@ -2,8 +2,6 @@ import {
   graphql, formatPageQuery, formatPageQueryWithCount, formatMutation, decodeId,
   baseApiUrl, openBlob, toISODate, coreAlert, formatMessage,
 } from "@openimis/fe-core";
-import _ from "lodash-uuid";
-
 export const BATCH_RUN_PICKER_PROJECTION = ["id", "runDate"];
 
 export const BATCH_RUN_WITH_LOCATION_PICKER_PROJECTION = [
@@ -12,9 +10,10 @@ export const BATCH_RUN_WITH_LOCATION_PICKER_PROJECTION = [
   "runMonth",
   "runYear",
   "location{code name}",
+  "program{idProgram code nameProgram}",
 ];
 
-export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict) {
+export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict, program) {
   var filters = ['orderBy: "-runDate"']
   var payload = null;
   if (!!scopeDistrict) {
@@ -23,6 +22,9 @@ export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict) {
     filters.push(`location_Uuid: "${scopeRegion.uuid}"`)
   } else { //!!scopeNational
     filters.push(`location_Isnull: true`)
+  }
+  if (!!program) {
+    filters.push(`program: ${program.idProgram}`)
   }
   payload = formatPageQuery("batchRuns",
     filters,
@@ -45,11 +47,12 @@ export function fetchBatchRunWithLocationPicker(params) {
   return graphql(payload, 'CLAIM_BATCH_CLAIM_BATCH_PICKER_WITH_LOCATION')
 }
 
-export function processBatch(location, year, month, clientMutationLabel, clientMutationDetails = null) {
+export function processBatch(location, year, month, program, clientMutationLabel, clientMutationDetails = null) {
   let input = `
     ${!!location ? `locationId: ${decodeId(location.id)}` : ''}
     month: ${month}
     year: ${year}
+    programId: ${program.idProgram}
   `
   let mutation = formatMutation("processBatch", input, clientMutationLabel, clientMutationDetails);
   var requestedDateTime = new Date();
@@ -85,6 +88,9 @@ export function generateReport(prms, intl) {
     prodId: !prms.product ? 0 : decodeId(prms.product.id),
     productCode: !prms.product ? '' : prms.product.code,
     productName: !prms.product ? '' : prms.product.name,
+    programId: !prms.program ? 0 : prms.program.idProgram,
+    programCode: !prms.program ? '' : prms.program.code,
+    programName: !prms.program ? '' : prms.program.nameProgram,
     runId: !prms.batchRun ? 0 : decodeId(prms.batchRun.id),
     runDate: !prms.batchRun ? '' : toISODate(prms.batchRun.runDate),
     hfId: !prms.healthFacility ? 0 : decodeId(prms.healthFacility.id),
@@ -98,6 +104,22 @@ export function generateReport(prms, intl) {
   }
   var url = new URL(`${window.location.origin}${baseApiUrl}/claim_batch/report/`);
   url.search = new URLSearchParams(qParams);
+  const safePart = value => (value || "all")
+    .toString()
+    .trim()
+    .replace(/[^a-zA-Z0-9_-]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  const programPart = safePart(
+    !!prms.program ? (prms.program.code || prms.program.nameProgram) : null
+  );
+  const locationPart = safePart(
+    (!!prms.healthFacility && prms.healthFacility.code)
+      || (!!prms.district && prms.district.code)
+      || (!!prms.region && prms.region.code)
+      || "national"
+  );
+  const timestampPart = new Date().toISOString().replace(/[:.]/g, "-");
+  const reportFilename = `${programPart}_${locationPart}_${timestampPart}.pdf`;
   return (dispatch) => {
     return fetch(url)
       .then(response => {
@@ -106,7 +128,7 @@ export function generateReport(prms, intl) {
         }
         return response.blob();
       })
-      .then(blob => openBlob(blob, `${_.uuid()}.pdf`, "pdf"))
+      .then(blob => openBlob(blob, reportFilename, "pdf"))
       .then(e => dispatch({ type: 'CLAIM_BATCH_PREVIEW_DONE', payload: prms }))
       .catch(error => {
         dispatch({ type: 'CLAIM_BATCH_PREVIEW_ERROR', payload: error });

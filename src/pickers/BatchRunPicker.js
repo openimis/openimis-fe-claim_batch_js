@@ -9,13 +9,19 @@ class BatchRunPicker extends Component {
 
     constructor(props) {
         super(props)
-        props.fetchBatchRunPicker(props.modulesManager, props.scopeRegion, props.scopeDistrict)
+        props.fetchBatchRunPicker(props.modulesManager, props.scopeRegion, props.scopeDistrict, props.program)
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.scopeRegion !== this.props.scopeRegion ||
-            prevProps.scopeDistrict !== this.props.scopeDistrict) {
-            this.props.fetchBatchRunPicker(this.props.modulesManager, this.props.scopeRegion, this.props.scopeDistrict);
+            prevProps.scopeDistrict !== this.props.scopeDistrict ||
+            prevProps.program !== this.props.program) {
+            this.props.fetchBatchRunPicker(
+                this.props.modulesManager,
+                this.props.scopeRegion,
+                this.props.scopeDistrict,
+                this.props.program,
+            );
         }
     }
 

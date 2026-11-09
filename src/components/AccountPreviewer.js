@@ -104,6 +104,14 @@ class AccountPreviewer extends Component {
         }));
     }
 
+    _onChangeProgram = (v) => {
+        this.setState({
+            program: v,
+            product: null,
+            batchRun: null,
+        });
+    }
+
     render() {
         const { intl, classes, generating } = this.props;
         return (
@@ -201,8 +209,19 @@ class AccountPreviewer extends Component {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <PublishedComponent
+                            pubRef="program.ProgramPicker"
+                            value={this.state.program}
+                            onChange={this._onChangeProgram}
+                        />
+                    </Grid>
+                    <Grid item xs={3} className={classes.item}>
+                        <PublishedComponent
                             pubRef="product.ProductPicker"
                             value={this.state.product}
+                            filter={(options) => !this.state.program
+                                ? options
+                                : options.filter(option => !!option.program
+                                    && option.program.idProgram === this.state.program.idProgram)}
                             onChange={(v, s) => this._onChange('product', v)}
                         />
                     </Grid>
@@ -211,6 +230,7 @@ class AccountPreviewer extends Component {
                             pubRef="claim_batch.BatchRunPicker"
                             scopeRegion={this.state.region}
                             scopeDistrict={this.state.district}
+                            program={this.state.program}
                             value={this.state.batchRun}
                             withNull={true}
                             onChange={(v, s) => this._onChange('batchRun', v)}

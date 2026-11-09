@@ -25,9 +25,6 @@ class ClaimBatchPage extends Component {
                 {rights.includes(RIGHT_PROCESS) &&
                     <BatchRunLauncher className={classes.section} />
                 }
-                {rights.includes(RIGHT_FILTER) &&
-                    <BatchRunSearcher className={classes.section} />
-                }
                 {rights.includes(RIGHT_PREVIEW) &&
                     <AccountPreviewer className={classes.section} />
                 }

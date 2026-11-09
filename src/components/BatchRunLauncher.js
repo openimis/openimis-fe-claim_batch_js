@@ -34,9 +34,11 @@ class BatchRunLauncher extends Component {
         region: null,
         district: null,
         locationStr: null,
-        year: null,
-        month: null,
-        monthStr: null,
+        year: 2026,
+        month: 8,
+        monthStr: "August",
+        program: null,
+        programStr: null,
     }
 
     launchBatchRun = e => {
@@ -76,6 +78,7 @@ class BatchRunLauncher extends Component {
                 this.state.district || this.state.region,
                 this.state.year,
                 this.state.month,
+                this.state.program,
                 formatMessageWithValues(this.props.intl, "claim_batch", "processBatch.mutationLabel",
                     {
                         location: this.state.locationStr || formatMessage(this.props.intl, "claim_batch", "claim_batch.regions.country"),
@@ -88,7 +91,7 @@ class BatchRunLauncher extends Component {
         }
     }
 
-    canLaunch = () => !!this.state.year && !!this.state.month
+    canLaunch = () => !!this.state.year && !!this.state.month && !!this.state.program
 
     onChangeRegion = (v, s) => {
         this.setState({
@@ -128,16 +131,17 @@ class BatchRunLauncher extends Component {
                     <Grid item xs={12}>
                         <Divider />
                     </Grid>
-                    <Grid item xs={3} className={classes.item}>
+                    <Grid item xs={2} className={classes.item}>
                         <PublishedComponent
                             pubRef="location.RegionPicker"
                             value={this.state.region}
-                            withNull={true}
+                            withNull={false}
+                            required={true}
                             nullLabel={formatMessage(intl, "claim_batch", "claim_batch.regions.country")}
                             onChange={this.onChangeRegion}
                         />
                     </Grid>
-                    <Grid item xs={3} className={classes.item}>
+                    <Grid item xs={2} className={classes.item}>
                         <PublishedComponent
                             pubRef="location.DistrictPicker"
                             region={this.state.region}
@@ -147,6 +151,15 @@ class BatchRunLauncher extends Component {
                         />
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
+                        <PublishedComponent
+                            pubRef="program.ProgramPicker"
+                            value={this.state.program}
+                            withNull={true}
+                            label={formatMessage(intl, "claim_batch", "program") || "Program"}
+                            onChange={(opt, str) => this.setState({ program: opt, programStr: str })}
+                        />
+                    </Grid>
+                    <Grid item xs={2} className={classes.item}>
                         <PublishedComponent
                             pubRef="core.YearPicker"
                             module="claim_batch"
