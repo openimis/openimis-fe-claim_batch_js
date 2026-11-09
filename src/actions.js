@@ -17,14 +17,14 @@ export function fetchBatchRunPicker(mm, scopeRegion, scopeDistrict, program) {
   var filters = ['orderBy: "-runDate"']
   var payload = null;
   if (!!scopeDistrict) {
-    filters.push([`location_Uuid: "${scopeDistrict.uuid}"`])
+    filters.push(`locationUuid: "${scopeDistrict.uuid}"`)
   } else if (!!scopeRegion) {
-    filters.push(`location_Uuid: "${scopeRegion.uuid}"`)
+    filters.push(`locationUuid: "${scopeRegion.uuid}"`)
   } else { //!!scopeNational
-    filters.push(`location_Isnull: true`)
+    filters.push(`locationIsnull: true`)
   }
   if (!!program) {
-    filters.push(`program: ${program.idProgram}`)
+    filters.push(`programId: ${program.idProgram}`)
   }
   payload = formatPageQuery("batchRuns",
     filters,
