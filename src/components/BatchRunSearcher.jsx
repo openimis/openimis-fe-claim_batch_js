@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { useTheme, styled } from "@mui/material/styles";
-import { injectIntl } from 'react-intl';
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { GetIconComponent, FormattedMessage, withModulesManager, Table, PublishedComponent, ProgressOrError, decodeId } from "@openimis/fe-core";
+import { GetIconComponent, FormattedMessage, withModulesManager, Table, PublishedComponent, ProgressOrError, decodeId, injectIntl } from "@openimis/fe-core";
 import BatchRunFilter from "./BatchRunFilter";
 import { Grid, Paper, IconButton } from "@mui/material";
 import { fetchBatchRunSummaries } from "../actions";

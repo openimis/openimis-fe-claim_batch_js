@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { useTheme, styled } from "@mui/material/styles";
-import { injectIntl } from 'react-intl';
 import BatchRunLauncher from "../components/BatchRunLauncher";
 import BatchRunSearcher from "../components/BatchRunSearcher";
 import AccountPreviewer from "../components/AccountPreviewer";
-import { formatMessage, Helmet } from "@openimis/fe-core";
+import { formatMessage, Helmet, injectIntl } from "@openimis/fe-core";
 import { RIGHT_PROCESS, RIGHT_FILTER, RIGHT_PREVIEW } from "../constants";
 
 const StyledDiv = styled('div')(({ theme }) => ({

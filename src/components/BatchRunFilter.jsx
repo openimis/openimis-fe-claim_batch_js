@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { useTheme, styled } from "@mui/material/styles";
-import { injectIntl } from 'react-intl';
 
 import { Grid } from "@mui/material";
-import { withModulesManager, PublishedComponent, decodeId, formatMessage, GRID_RESPONSIVE_STANDARD } from "@openimis/fe-core";
+import { withModulesManager, PublishedComponent, decodeId, formatMessage, GRID_RESPONSIVE_STANDARD, injectIntl } from "@openimis/fe-core";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
     '& .dialogTitle': theme.dialog?.title ?? {},
