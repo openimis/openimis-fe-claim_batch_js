@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { injectIntl } from "react-intl";
 import { fetchBatchRunWithLocationPicker } from "../actions";
-import { formatMessage, AutoSuggestion, withModulesManager, decodeId } from "@openimis/fe-core";
+import { formatMessage, AutoSuggestion, withModulesManager, decodeId, injectIntl } from "@openimis/fe-core";
 import { getBatchRunLabel } from "../utils";
 import _ from "lodash";
 

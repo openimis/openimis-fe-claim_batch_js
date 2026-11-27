@@ -7,7 +7,8 @@ import { describe, it, expect, vi } from "vitest";
 
 // The fe-core barrel cannot be loaded whole in a module test (UserPicker import
 // cycle). The year and month pickers become buttons that pick a fixed value.
-vi.mock("@openimis/fe-core", () => ({
+vi.mock("@openimis/fe-core", async () => ({
+  injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
   GetIconComponent: (name) => function Icon() { return <span>{name}</span>; },
   FormattedMessage: () => null,
   formatMessage: (intl, module, id) => id,
