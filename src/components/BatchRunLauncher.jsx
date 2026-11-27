@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 import { useTheme, styled } from "@mui/material/styles";
-import { injectIntl } from 'react-intl';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
 import { Paper, Grid, Divider, IconButton } from "@mui/material";
 import {
     GetIconComponent, formatMessage, formatMessageWithValues, FormattedMessage,
-    PublishedComponent, coreConfirm, journalize
+    PublishedComponent, coreConfirm, journalize, injectIntl
 } from "@openimis/fe-core";
 import { processBatch } from "../actions";
 const SendIcon = GetIconComponent("Send")

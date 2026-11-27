@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { useTheme, styled } from "@mui/material/styles";
-import { injectIntl } from 'react-intl';
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
 import { Paper, Grid, IconButton, Divider, FormControlLabel, Checkbox, CircularProgress } from "@mui/material";
-import { GetIconComponent, FormattedMessage, PublishedComponent, ConstantBasedPicker, formatMessage } from "@openimis/fe-core";
+import { GetIconComponent, FormattedMessage, PublishedComponent, ConstantBasedPicker, formatMessage, injectIntl } from "@openimis/fe-core";
 import { preview, generateReport } from "../actions"
 import { ACCOUNT_GROUP_BY } from "../constants";
 
